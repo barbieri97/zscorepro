@@ -30,5 +30,6 @@
   },
   "devDependencies": {
     "@types/qrcode": "^1.5.6"
-  }
+  },
+  "version": "0.0.1"
 }
