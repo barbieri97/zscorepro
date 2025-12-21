@@ -9,7 +9,7 @@ const tools = [
   {
     label: "Análise descritiva",
     link: "/calculadoras/descritiva",
-    description: "Análise descritiva simples",
+    description: "Gera um resumo estatístico básico dos dados, incluindo medidas de tendência central e dispersão.",
     icon: "i-heroicons-table-cells",
   },
   {

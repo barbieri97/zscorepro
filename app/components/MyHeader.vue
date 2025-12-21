@@ -51,7 +51,7 @@ const items = computed<NavigationMenuItem[]>(() => [
       {
         label: "Análise descritiva",
         to: "/calculadoras/descritiva",
-        description: "Análise descritiva simples",
+        description: "Gera um resumo estatístico básico dos dados, incluindo medidas de tendência central e dispersão.",
         icon: "i-heroicons-table-cells"
       },
       {
