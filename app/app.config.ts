@@ -8,8 +8,5 @@ export default defineAppConfig({
       error: "red",
       neutral: "stone",
     },
-    main: {
-      base: 'min-h-[calc(100vh-var(--ui-header-height)+var(--ui-footer-height))]'
-    }
   },
 });
