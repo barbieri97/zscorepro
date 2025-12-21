@@ -19,6 +19,12 @@ const tools = [
     link: "/ferramentas/qrcode"
   },
   {
+    label: "Análise descritiva",
+    link: "/calculadoras/descritiva",
+    description: "Análise descritiva simples",
+    icon: "i-heroicons-table-cells",
+  },
+  {
     label: "Calculadora de Idade",
     description: "Calcule a idade exata a partir da data de nascimento.",
     icon: "i-heroicons-calendar",
@@ -39,7 +45,7 @@ const tools = [
     <div class="text-center space-y-4 max-w-2xl">
       <h1 class="text-4xl font-bold text-primary">ZSCOREPRO</h1>
       <p class="text-lg text-muted">
-        Ferramentas online para psicólogos e pesquisadores em psicometria e avaliação psicológica.
+        Ferramentas online para psicometristas e pesquisadores.
       </p>
     </div>
 

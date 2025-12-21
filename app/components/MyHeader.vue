@@ -49,6 +49,12 @@ const items = computed<NavigationMenuItem[]>(() => [
         disabled: true
       },
       {
+        label: "Análise descritiva",
+        to: "/calculadoras/descritiva",
+        description: "Análise descritiva simples",
+        icon: "i-heroicons-table-cells"
+      },
+      {
         label: "Indice de Mudança Confiável - RCI",
         to: "/calculadoras/idade",
         description: "Verifica se a mudança é real ou erro de medida.",

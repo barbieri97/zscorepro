@@ -63,6 +63,44 @@ const percentile = computed(() => {
   return (p * 100).toFixed(1)
 })
 
+const classification = computed<string | null>(() => {
+  if (zScore.value === null) return null
+
+  const z = zScore.value
+
+  if (z < -2) return "Inferior"
+  if (z < -1) return "Limítrofe"
+  if (z < -0.5) return "Média inferior"
+  if (z <= 0.5) return "Média"
+  if (z <= 1) return "Média superior"
+  if (z <= 2) return "Superior"
+  return "Muito superior"
+})
+
+const classificationBgClass = computed(() => {
+  if (!classification.value) return ""
+
+  switch (classification.value) {
+    case "Inferior":
+      return "bg-red-200 dark:bg-red-950/20"
+    case "Limítrofe":
+      return "bg-orange-200 dark:bg-orange-950/20"
+    case "Média inferior":
+      return "bg-amber-200 dark:bg-amber-950/20"
+    case "Média":
+      return "bg-green-200 dark:bg-green-950/20"
+    case "Média superior":
+      return "bg-sky-200 dark:bg-sky-950/20"
+    case "Superior":
+      return "bg-blue-200 dark:bg-blue-950/20"
+    case "Muito superior":
+      return "bg-indigo-200 dark:bg-indigo-950/20"
+    default:
+      return ""
+  }
+})
+
+
 /* Copiar para área de transferência */
 function copy(value: string | null, label?: string) {
   if (!value) return
@@ -102,80 +140,111 @@ function copy(value: string | null, label?: string) {
           <UInput v-model.number="sd" type="number" placeholder="Ex: 15" />
         </UFormField>
 
-        <UTooltip
-        text="Marque esta opção quando valores menores indicarem melhor desempenho (ex: tempo de reação, número de erros)."
-        >
-            <UFormField>
-                <UCheckbox
-                v-model="invert"
-                label="inverter Z-score"
-                />
+        <UFormField class="flex items-center gap-2 flex-wrap">
+          <div class="flex items-center gap-2 flex-wrap">
+
+            <UCheckbox
+            v-model="invert"
+            label="inverter Z-score"
+            />
+            <UTooltip
+            text="Marque esta opção quando valores menores indicarem melhor desempenho (ex: tempo de reação, número de erros)."
+            >
+            <UIcon name="i-heroicons-information-circle" class="text-primary" />
+          </UTooltip>
+        </div>
             </UFormField>
-        </UTooltip>
 
       </div>
 
       <!-- Resultados -->
       <div v-if="zScore !== null" class="space-y-4">
         <!-- Z -->
-        <div class="flex items-center justify-between p-3 border rounded">
-          <div>
-            <p class="text-sm text-muted">Z-score</p>
-            <p class="font-semibold text-lg">
-              {{ zScore.toFixed(2) }}
-            </p>
+         <UCard variant="soft">
+           <div class="flex items-center justify-between">
+             <div>
+               <p class="text-sm text-muted">Z-score</p>
+               <p class="font-semibold text-lg">
+                 {{ zScore.toFixed(2) }}
+                </p>
           </div>
           <UButton
             icon="i-heroicons-clipboard"
             variant="ghost"
             @click="copy(zScore.toFixed(2), 'z-score')"
-          />
-        </div>
+            />
+          </div>
+        </UCard>
 
         <!-- T -->
-        <div class="flex items-center justify-between p-3 border rounded">
-          <div>
-            <p class="text-sm text-muted">T-score</p>
-            <p class="font-semibold text-lg">
-              {{ tScore }}
-            </p>
+         <UCard variant="soft">
+
+           <div class="flex items-center justify-between">
+             <div>
+               <p class="text-sm text-muted">T-score</p>
+               <p class="font-semibold text-lg">
+                 {{ tScore }}
+                </p>
           </div>
           <UButton
-            icon="i-heroicons-clipboard"
+          icon="i-heroicons-clipboard"
             variant="ghost"
             @click="copy(tScore, 't-score')"
-          />
-        </div>
+            />
+          </div>
+        </UCard>
 
         <!-- Ponto ponderado -->
-        <div class="flex items-center justify-between p-3 border rounded">
-          <div>
-            <p class="text-sm text-muted">Ponto ponderado</p>
-            <p class="font-semibold text-lg">
+         <UCard variant="soft">
+
+           <div class="flex items-center justify-between">
+             <div>
+               <p class="text-sm text-muted">Ponto ponderado</p>
+               <p class="font-semibold text-lg">
               {{ weightedScore }}
             </p>
           </div>
           <UButton
-            icon="i-heroicons-clipboard"
-            variant="ghost"
-            @click="copy(weightedScore, 'Ponto ponderado')"
+          icon="i-heroicons-clipboard"
+          variant="ghost"
+          @click="copy(weightedScore, 'Ponto ponderado')"
           />
         </div>
+      </UCard>
 
         <!-- Percentil -->
-        <div class="flex items-center justify-between p-3 border rounded">
-          <div>
-            <p class="text-sm text-muted">Percentil</p>
-            <p class="font-semibold text-lg">
-              {{ percentile }}%
-            </p>
+        <UCard variant="soft">
+           <div class="flex items-center justify-between">
+
+             <div>
+               <p class="text-sm text-muted">Percentil</p>
+               <p class="font-semibold text-lg">
+                 {{ percentile }}%
+                </p>
+              </div>
+              <UButton
+              icon="i-heroicons-clipboard"
+              variant="ghost"
+              @click="copy(percentile + '%', 'Percentil')"
+              />
+            </div>
+        </UCard>
+        <UCard :class="classificationBgClass" variant="soft">
+           <div class="flex items-center justify-between">
+           <div>
+             <p class="text-sm text-muted">Classificação</p>
+             <p class="font-semibold text-lg">
+               {{ classification }}
+             </p>
+           </div>
+         
+           <UButton
+             icon="i-heroicons-clipboard"
+             variant="ghost"
+             @click="copy(classification, 'Classificação')"
+           />
           </div>
-          <UButton
-            icon="i-heroicons-clipboard"
-            variant="ghost"
-            @click="copy(percentile + '%', 'Percentil')"
-          />
-        </div>
+        </UCard>
       </div>
 
       <!-- Footer -->
@@ -183,11 +252,10 @@ function copy(value: string | null, label?: string) {
          <div class="flex justify-center">
 
              <UBadge 
-             label="Conversões baseadas na distribuição normal padrão. Não usar os resultados para amostras não normativas"
+             label="Conversões válidas apenas para distribuições normais."
              variant="soft"
              color="warning"
              icon="i-heroicons-exclamation-triangle"
-             class="text-center whitespace-normal"
              />
         </div>
       </template>

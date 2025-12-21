@@ -13,5 +13,10 @@ export default defineNuxtConfig({
     '@nuxt/test-utils',
     '@nuxt/ui',
     '@nuxthub/core'
-  ]
+  ],
+
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
+  }
 })
