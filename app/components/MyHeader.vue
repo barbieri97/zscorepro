@@ -25,13 +25,12 @@ const items = computed<NavigationMenuItem[]>(() => [
         to: "/calculadoras/financeiro",
         description: "Calculadoras para a area financeira, como juros e investimentos",
         icon: "i-heroicons-banknotes",
-        disabled: true,
         children: [
           {
-            label: "Juros compostos",
-            to: "/calculadora/financeiro/juros-compostos",
+            label: "Conta Compartilhada",
+            to: "/calculadoras/financeiro/conta-compartilhada",
+            description: "Calculadora de divisão de gastos que permite informar quanto cada pessoa pagou e mostra automaticamente quem deve pagar ou receber para que a conta fique dividida de forma justa entre todos.",
             icon: "i-heroicons-percent-badge",
-            disabled: true
           }
         ]
       },

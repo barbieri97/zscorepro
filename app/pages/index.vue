@@ -41,6 +41,12 @@ const tools = [
     description: "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
     link: "/simulacoes/galton-board",
     icon: "i-heroicons-chart-bar"
+  },
+  {
+      label: "Conta Compartilhada",
+      link: "/calculadoras/financeiro/conta-compartilhada",
+      description: "Calculadora de divisão de gastos que permite informar quanto cada pessoa pagou e mostra automaticamente quem deve pagar ou receber para que a conta fique dividida de forma justa entre todos.",
+      icon: "i-heroicons-percent-badge",
   }
 ]
 </script>
