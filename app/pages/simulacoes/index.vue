@@ -1,29 +1,11 @@
 <script setup lang="ts">
 const tools = [
-  {
-    label: "Calculadora de Z-score",
-    description: "Converta escores para Z, T, percentil ou ponto ponderado.",
-    icon: "i-heroicons-chart-bar",
-    link: "/calculadoras/zscore"
-  },
-  {
-    label: "Análise descritiva",
-    link: "/calculadoras/descritiva",
-    description: "Gera um resumo estatístico básico dos dados, incluindo medidas de tendência central e dispersão.",
-    icon: "i-heroicons-table-cells",
-  },
-  {
-    label: "Calculadora de Idade",
-    description: "Calcule a idade exata a partir da data de nascimento.",
-    icon: "i-heroicons-calendar",
-    link: "/calculadoras/idade"
-  },
-  {
-    label: "RCI - Índice de Mudança Confiável",
-    description: "Avalie se a mudança entre duas medições é significativa.",
-    icon: "i-heroicons-arrows-right-left",
-    link: "/calculadoras/rci"
-  }
+      {
+        label: "Tabuleiro de Galton",
+        description: "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
+        link: "/simulacoes/galton-board",
+        icon: "i-heroicons-chart-bar"
+      }
 ]
 </script>
 
@@ -32,7 +14,7 @@ const tools = [
     <!-- Header -->
     <div class="text-center space-y-4 max-w-2xl">
       <h1 class="text-4xl font-bold text-primary">ZSCOREPRO</h1>
-            <h3 class="text-primary">Calculadoras</h3>
+      <h3 class="text-primary">Ferramentas</h3>
       <p class="text-lg text-muted">
         Ferramentas online para psicometristas e pesquisadores.
       </p>

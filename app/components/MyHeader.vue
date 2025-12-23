@@ -90,6 +90,19 @@ const items = computed<NavigationMenuItem[]>(() => [
       },
     ]
   },
+  {
+    label: "Simulações",
+    to: "/simulacoes",
+    icon: "i-heroicons-beaker",
+    children: [
+      {
+        label: "Tabuleiro de Galton",
+        description: "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
+        to: "/simulacoes/galton-board",
+        icon: "i-heroicons-chart-bar"
+      }
+    ]
+  }
 ]);
 </script>
 

@@ -33,7 +33,6 @@ const tools = [
         :key="tool.label"
         class="flex flex-col justify-between p-6 hover:shadow-lg transition-shadow cursor-pointer"
         variant="soft"
-        :to="tool.link"
       >
         <div class="flex items-center space-x-4">
           <UIcon :name="tool.icon" class="text-primary text-3xl" />

@@ -35,6 +35,12 @@ const tools = [
     description: "Avalie se a mudança entre duas medições é significativa.",
     icon: "i-heroicons-arrows-right-left",
     link: "/calculadoras/rci"
+  },
+  {
+    label: "Tabuleiro de Galton",
+    description: "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
+    link: "/simulacoes/galton-board",
+    icon: "i-heroicons-chart-bar"
   }
 ]
 </script>
@@ -56,7 +62,6 @@ const tools = [
         :key="tool.label"
         class="flex flex-col justify-between p-6 hover:shadow-lg transition-shadow cursor-pointer"
         variant="soft"
-        :to="tool.link"
       >
         <div class="flex items-center space-x-4">
           <UIcon :name="tool.icon" class="text-primary text-3xl" />
