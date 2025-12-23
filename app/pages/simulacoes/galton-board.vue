@@ -6,7 +6,7 @@ const chartCanvas = ref<HTMLCanvasElement | null>(null)
 const toast = useToast()
 
 // Configurações da simulação
-const ballCount = ref(100)
+const ballCount = ref(300)
 const isRunning = ref(false)
 const isPaused = ref(false)
 const bins = ref<number[]>([])
