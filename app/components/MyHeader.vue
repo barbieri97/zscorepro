@@ -46,7 +46,6 @@ const items = computed<NavigationMenuItem[]>(() => [
         to: "/calculadoras/idade",
         description: "Calcula a idade exata a partir da data de nascimento.",
         icon: "i-heroicons-calendar",
-        disabled: true
       },
       {
         label: "Análise descritiva",
