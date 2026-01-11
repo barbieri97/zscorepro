@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, watch, onMounted } from "vue"
 
 /* Tipos */
 interface Person {
@@ -7,6 +7,14 @@ interface Person {
   name: string
   amount: number
 }
+
+interface AppState {
+  people: Person[]
+  nextId: number
+}
+
+/* Constantes */
+const STORAGE_KEY = "group-expense-splitter"
 
 /* Estado */
 const people = ref<Person[]>([
@@ -17,6 +25,77 @@ let nextId = 3
 
 const toast = useToast()
 
+/* Local Storage Functions */
+function saveToLocalStorage() {
+  try {
+    const state: AppState = {
+      people: people.value,
+      nextId: nextId
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  } catch (error) {
+    console.error("Erro ao salvar no localStorage:", error)
+    toast.add({
+      title: "Erro ao salvar",
+      description: "Não foi possível salvar os dados localmente",
+      icon: "i-heroicons-exclamation-triangle",
+      color: "error"
+    })
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const state: AppState = JSON.parse(saved)
+      people.value = state.people
+      nextId = state.nextId
+    }
+  } catch (error) {
+    console.error("Erro ao carregar do localStorage:", error)
+    toast.add({
+      title: "Erro ao carregar",
+      description: "Não foi possível carregar os dados salvos",
+      icon: "i-heroicons-exclamation-triangle",
+      color: "warning"
+    })
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+    people.value = [
+      { id: 1, name: "", amount: 0 },
+      { id: 2, name: "", amount: 0 }
+    ]
+    nextId = 3
+    toast.add({
+      title: "Dados limpos",
+      description: "Todos os dados foram removidos",
+      icon: "i-heroicons-check-circle",
+      color: "success"
+    })
+  } catch (error) {
+    console.error("Erro ao limpar localStorage:", error)
+  }
+}
+
+/* Lifecycle */
+onMounted(() => {
+  loadFromLocalStorage()
+})
+
+/* Watch para salvar automaticamente */
+watch(
+  people,
+  () => {
+    saveToLocalStorage()
+  },
+  { deep: true }
+)
+
 /* Adicionar pessoa */
 function addPerson() {
   people.value.push({
@@ -24,6 +103,7 @@ function addPerson() {
     name: "",
     amount: 0
   })
+  saveToLocalStorage()
 }
 
 /* Remover pessoa */
@@ -38,6 +118,7 @@ function removePerson(id: number) {
     return
   }
   people.value = people.value.filter(p => p.id !== id)
+  saveToLocalStorage()
 }
 
 /* Cálculos */
@@ -207,11 +288,24 @@ const suggestedTransfers = computed<Transfer[]>(() => {
     <UCard class="w-full max-w-4xl">
       <!-- Header -->
       <template #header>
-        <div class="flex items-center justify-center gap-2">
-          <UIcon name="i-heroicons-scale" class="text-2xl text-primary" />
-          <h2 class="text-lg font-semibold text-center">
-            Divisão de Gastos em Grupo
-          </h2>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-heroicons-scale" class="text-2xl text-primary" />
+            <h2 class="text-lg font-semibold">
+              Divisão de Gastos em Grupo
+            </h2>
+          </div>
+          
+          <UButton
+            icon="i-heroicons-trash"
+            size="sm"
+            color="error"
+            variant="ghost"
+            @click="clearLocalStorage"
+            title="Limpar todos os dados"
+          >
+            Limpar tudo
+          </UButton>
         </div>
       </template>
 
@@ -310,7 +404,7 @@ const suggestedTransfers = computed<Transfer[]>(() => {
         <!-- Resultados individuais -->
         <div class="space-y-3 mt-6">
           <h3 class="text-sm font-medium text-muted">Acerto de contas</h3>
-          
+
           <UCard
             v-for="result in results"
             :key="result.id"
