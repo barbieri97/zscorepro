@@ -1,7 +1,13 @@
+<script setup lang="ts">
+const config = useRuntimeConfig();
+const version = config.public.appVersion;
+</script>
 <template>
   <UFooter>
     <template #left>
-      <p class="text-muted text-sm">Copyright © {{ new Date().getFullYear() }}</p>
+      <p class="text-muted text-sm">
+        Copyright © {{ new Date().getFullYear() }} - v{{ version }}
+      </p>
     </template>
 
     <template #right>
