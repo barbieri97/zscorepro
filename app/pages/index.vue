@@ -4,51 +4,55 @@ const tools = [
     label: "Calculadora de Z-score",
     description: "Converta escores para Z, T, percentil ou ponto ponderado.",
     icon: "i-heroicons-chart-bar",
-    link: "/calculadoras/zscore"
+    link: "/calculadoras/zscore",
   },
   {
     label: "Gerador de Gráficos",
-    description: "Crie gráficos de barra, linha ou pizza a partir de seus dados.",
+    description:
+      "Crie gráficos de barra, linha ou pizza a partir de seus dados.",
     icon: "i-heroicons-chart-pie",
-    link: "/ferramentas/graficos"
+    link: "/ferramentas/graficos",
   },
   {
     label: "QR Code",
     description: "Gere QR Codes para URLs, textos ou dados de forma rápida.",
     icon: "i-heroicons-qr-code",
-    link: "/ferramentas/qrcode"
+    link: "/ferramentas/qrcode",
   },
   {
     label: "Análise descritiva",
     link: "/calculadoras/descritiva",
-    description: "Gera um resumo estatístico básico dos dados, incluindo medidas de tendência central e dispersão.",
+    description:
+      "Gera um resumo estatístico básico dos dados, incluindo medidas de tendência central e dispersão.",
     icon: "i-heroicons-table-cells",
   },
   {
     label: "Calculadora de Idade",
     description: "Calcule a idade exata a partir da data de nascimento.",
     icon: "i-heroicons-calendar",
-    link: "/calculadoras/idade"
+    link: "/calculadoras/idade",
   },
   {
     label: "RCI - Índice de Mudança Confiável",
     description: "Avalie se a mudança entre duas medições é significativa.",
     icon: "i-heroicons-arrows-right-left",
-    link: "/calculadoras/rci"
+    link: "/calculadoras/rci",
   },
   {
     label: "Tabuleiro de Galton",
-    description: "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
+    description:
+      "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
     link: "/simulacoes/galton-board",
-    icon: "i-heroicons-chart-bar"
+    icon: "i-heroicons-chart-bar",
   },
   {
-      label: "Conta Compartilhada",
-      link: "/calculadoras/financeiro/conta-compartilhada",
-      description: "Calculadora de divisão de gastos que permite informar quanto cada pessoa pagou e mostra automaticamente quem deve pagar ou receber para que a conta fique dividida de forma justa entre todos.",
-      icon: "i-heroicons-percent-badge",
-  }
-]
+    label: "Conta Compartilhada",
+    link: "/calculadoras/financeiro/conta-compartilhada",
+    description:
+      "Calculadora de divisão de gastos que permite informar quanto cada pessoa pagou e mostra automaticamente quem deve pagar ou receber para que a conta fique dividida de forma justa entre todos.",
+    icon: "i-heroicons-percent-badge",
+  },
+];
 </script>
 
 <template>
