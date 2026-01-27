@@ -6,7 +6,6 @@ interface Person {
   id: number;
   name: string;
   amount: number;
-  responsibleFor: number; // Quantas pessoas esta pessoa paga (incluindo ela mesma)
 }
 
 interface AppState {
@@ -19,8 +18,8 @@ const STORAGE_KEY = "group-expense-splitter";
 
 /* Estado */
 const people = ref<Person[]>([
-  { id: 1, name: "", amount: 0, responsibleFor: 1 },
-  { id: 2, name: "", amount: 0, responsibleFor: 1 },
+  { id: 1, name: "", amount: 0 },
+  { id: 2, name: "", amount: 0 },
 ]);
 let nextId = 3;
 
@@ -50,11 +49,7 @@ function loadFromLocalStorage() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const state: AppState = JSON.parse(saved);
-      // Migração: adicionar responsibleFor se não existir
-      people.value = state.people.map((p) => ({
-        ...p,
-        responsibleFor: p.responsibleFor || 1,
-      }));
+      people.value = state.people;
       nextId = state.nextId;
     }
   } catch (error) {
@@ -72,8 +67,8 @@ function clearLocalStorage() {
   try {
     localStorage.removeItem(STORAGE_KEY);
     people.value = [
-      { id: 1, name: "", amount: 0, responsibleFor: 1 },
-      { id: 2, name: "", amount: 0, responsibleFor: 1 },
+      { id: 1, name: "", amount: 0 },
+      { id: 2, name: "", amount: 0 },
     ];
     nextId = 3;
     toast.add({
@@ -107,17 +102,16 @@ function addPerson() {
     id: nextId++,
     name: "",
     amount: 0,
-    responsibleFor: 1,
   });
   saveToLocalStorage();
 }
 
 /* Remover pessoa */
 function removePerson(id: number) {
-  if (people.value.length <= 1) {
+  if (people.value.length <= 2) {
     toast.add({
       title: "Atenção",
-      description: "É necessário ter pelo menos 1 pessoa",
+      description: "É necessário ter pelo menos 2 pessoas",
       icon: "i-heroicons-exclamation-triangle",
       color: "warning",
     });
@@ -132,26 +126,17 @@ const totalAmount = computed(() => {
   return people.value.reduce((sum, person) => sum + (person.amount || 0), 0);
 });
 
-const totalPeople = computed(() => {
-  return people.value.reduce(
-    (sum, person) => sum + (person.responsibleFor || 1),
-    0,
-  );
-});
-
 const fairAmount = computed(() => {
-  return totalPeople.value > 0 ? totalAmount.value / totalPeople.value : 0;
+  const count = people.value.length;
+  return count > 0 ? totalAmount.value / count : 0;
 });
 
 const results = computed(() => {
   return people.value.map((person) => {
-    const personResponsibleFor = person.responsibleFor || 1;
-    const shouldPay = fairAmount.value * personResponsibleFor;
-    const difference = (person.amount || 0) - shouldPay;
+    const difference = (person.amount || 0) - fairAmount.value;
 
     return {
       ...person,
-      shouldPay,
       difference,
       status:
         difference > 0.01 ? "receive" : difference < -0.01 ? "pay" : "even",
@@ -164,15 +149,12 @@ function copyResults() {
   const text = results.value
     .map((r) => {
       const name = r.name || "Sem nome";
-      const peopleText =
-        r.responsibleFor > 1 ? ` (${r.responsibleFor} pessoas)` : "";
-
       if (r.status === "even") {
-        return `${name}${peopleText}: Quitado`;
+        return `${name}: Quitado`;
       } else if (r.status === "receive") {
-        return `${name}${peopleText}: Deve receber R$ ${Math.abs(r.difference).toFixed(2)}`;
+        return `${name}: Deve receber R$ ${Math.abs(r.difference).toFixed(2)}`;
       } else {
-        return `${name}${peopleText}: Deve pagar R$ ${Math.abs(r.difference).toFixed(2)}`;
+        return `${name}: Deve pagar R$ ${Math.abs(r.difference).toFixed(2)}`;
       }
     })
     .join("\n");
@@ -190,7 +172,7 @@ function copyResults() {
         .join("\n");
   }
 
-  const summary = `Divisão de Gastos em Grupo\n\nTotal de pessoas: ${totalPeople.value}\nTotal gasto: R$ ${totalAmount.value.toFixed(2)}\nValor justo por pessoa: R$ ${fairAmount.value.toFixed(2)}\n\nAcerto de contas:\n${text}${transfersText}`;
+  const summary = `Divisão de Gastos em Grupo\n\nTotal: R$ ${totalAmount.value.toFixed(2)}\nValor justo por pessoa: R$ ${fairAmount.value.toFixed(2)}\n\nAcerto de contas:\n${text}${transfersText}`;
 
   navigator.clipboard.writeText(summary);
 
@@ -336,14 +318,9 @@ const suggestedTransfers = computed<Transfer[]>(() => {
       <!-- Adicionar pessoas -->
       <div class="space-y-4 mb-6">
         <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-sm font-medium text-muted">
-              Pessoas responsáveis ({{ people.length }})
-            </h3>
-            <p class="text-xs text-muted mt-1">
-              Total de pessoas no grupo: {{ totalPeople }}
-            </p>
-          </div>
+          <h3 class="text-sm font-medium text-muted">
+            Pessoas ({{ people.length }})
+          </h3>
           <UButton
             icon="i-heroicons-plus"
             size="sm"
@@ -362,8 +339,8 @@ const suggestedTransfers = computed<Transfer[]>(() => {
             variant="soft"
             class="border"
           >
-            <div class="flex items-start gap-3">
-              <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="flex items-center gap-3">
+              <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                 <UFormField label="Nome">
                   <UInput v-model="person.name" placeholder="Ex: João" />
                 </UFormField>
@@ -377,26 +354,6 @@ const suggestedTransfers = computed<Transfer[]>(() => {
                     placeholder="0.00"
                   />
                 </UFormField>
-
-                <UFormField label="Paga por quantas pessoas?">
-                  <UInput
-                    v-model.number="person.responsibleFor"
-                    type="number"
-                    step="1"
-                    min="1"
-                    placeholder="1"
-                  >
-                    <template #trailing>
-                      <span class="text-xs text-muted">
-                        {{
-                          person.responsibleFor > 1
-                            ? `${person.responsibleFor} pessoas`
-                            : "pessoa"
-                        }}
-                      </span>
-                    </template>
-                  </UInput>
-                </UFormField>
               </div>
 
               <UButton
@@ -404,8 +361,7 @@ const suggestedTransfers = computed<Transfer[]>(() => {
                 color="error"
                 variant="ghost"
                 size="sm"
-                class="mt-6"
-                :disabled="people.length <= 1"
+                :disabled="people.length <= 2"
                 @click="removePerson(person.id)"
               />
             </div>
@@ -428,16 +384,7 @@ const suggestedTransfers = computed<Transfer[]>(() => {
         </div>
 
         <!-- Cards de resumo -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <UCard variant="soft" class="bg-primary/10">
-            <div>
-              <p class="text-sm text-muted">Total de pessoas</p>
-              <p class="font-semibold text-2xl text-primary">
-                {{ totalPeople }}
-              </p>
-            </div>
-          </UCard>
-
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UCard variant="soft" class="bg-primary/10">
             <div>
               <p class="text-sm text-muted">Total gasto</p>
@@ -475,21 +422,11 @@ const suggestedTransfers = computed<Transfer[]>(() => {
                   class="text-2xl"
                 />
                 <div>
-                  <div class="flex items-center gap-2">
-                    <p class="font-semibold">
-                      {{ result.name || "Sem nome" }}
-                    </p>
-                    <UBadge
-                      v-if="result.responsibleFor > 1"
-                      :label="`${result.responsibleFor} pessoas`"
-                      color="primary"
-                      variant="soft"
-                      size="xs"
-                    />
-                  </div>
+                  <p class="font-semibold">
+                    {{ result.name || "Sem nome" }}
+                  </p>
                   <p class="text-sm text-muted">
-                    Gastou: R$ {{ (result.amount || 0).toFixed(2) }} · Deveria
-                    pagar: R$ {{ result.shouldPay.toFixed(2) }}
+                    Gastou: R$ {{ (result.amount || 0).toFixed(2) }}
                   </p>
                 </div>
               </div>
