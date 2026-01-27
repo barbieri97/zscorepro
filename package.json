@@ -19,6 +19,7 @@
     "@nuxt/ui": "^4.3.0",
     "@nuxthub/core": "^0.10.3",
     "@unhead/vue": "^2.0.19",
+    "@vercel/analytics": "^1.6.1",
     "better-sqlite3": "^12.5.0",
     "chart.js": "^4.5.1",
     "eslint": "^9.39.2",
