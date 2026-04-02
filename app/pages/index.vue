@@ -1,58 +1,5 @@
 <script setup lang="ts">
-const tools = [
-  {
-    label: "Calculadora de Z-score",
-    description: "Converta escores para Z, T, percentil ou ponto ponderado.",
-    icon: "i-heroicons-chart-bar",
-    link: "/calculadoras/zscore",
-  },
-  {
-    label: "Gerador de Gráficos",
-    description:
-      "Crie gráficos de barra, linha ou pizza a partir de seus dados.",
-    icon: "i-heroicons-chart-pie",
-    link: "/ferramentas/graficos",
-  },
-  {
-    label: "QR Code",
-    description: "Gere QR Codes para URLs, textos ou dados de forma rápida.",
-    icon: "i-heroicons-qr-code",
-    link: "/ferramentas/qrcode",
-  },
-  {
-    label: "Análise descritiva",
-    link: "/calculadoras/descritiva",
-    description:
-      "Gera um resumo estatístico básico dos dados, incluindo medidas de tendência central e dispersão.",
-    icon: "i-heroicons-table-cells",
-  },
-  {
-    label: "Calculadora de Idade",
-    description: "Calcule a idade exata a partir da data de nascimento.",
-    icon: "i-heroicons-calendar",
-    link: "/calculadoras/idade",
-  },
-  {
-    label: "RCI - Índice de Mudança Confiável",
-    description: "Avalie se a mudança entre duas medições é significativa.",
-    icon: "i-heroicons-arrows-right-left",
-    link: "/calculadoras/rci",
-  },
-  {
-    label: "Tabuleiro de Galton",
-    description:
-      "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
-    link: "/simulacoes/galton-board",
-    icon: "i-heroicons-chart-bar",
-  },
-  {
-    label: "Conta Compartilhada",
-    link: "/calculadoras/financeiro/conta-compartilhada",
-    description:
-      "Calculadora de divisão de gastos que permite informar quanto cada pessoa pagou e mostra automaticamente quem deve pagar ou receber para que a conta fique dividida de forma justa entre todos.",
-    icon: "i-heroicons-percent-badge",
-  },
-];
+const { groupedTools } = useNavigation();
 </script>
 
 <template>
@@ -65,28 +12,39 @@ const tools = [
       </p>
     </div>
 
-    <!-- Cards das ferramentas -->
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl">
-      <UCard
-        v-for="tool in tools"
-        :key="tool.label"
-        class="flex flex-col justify-between p-6 hover:shadow-lg transition-shadow cursor-pointer"
-        variant="soft"
-      >
-        <div class="flex items-center space-x-4">
-          <UIcon :name="tool.icon" class="text-primary text-3xl" />
-          <h3 class="font-semibold text-lg">{{ tool.label }}</h3>
+    <!-- Grupos de Ferramentas -->
+    <div class="w-full max-w-6xl space-y-16">
+      <section v-for="group in groupedTools" :key="group.label" class="space-y-6">
+        <div class="flex items-center space-x-3 border-b border-gray-200 dark:border-gray-800 pb-2">
+          <UIcon v-if="group.icon" :name="group.icon" class="text-primary text-2xl" />
+          <h2 class="text-2xl font-semibold">{{ group.label }}</h2>
         </div>
-        <p class="mt-4 text-sm text-muted">{{ tool.description }}</p>
-        <UButton
-          class="mt-6 self-start"
-          icon="i-heroicons-arrow-top-right-on-square"
-          variant="outline"
-          :to="tool.link"
-        >
-          Acessar
-        </UButton>
-      </UCard>
+        
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <UCard
+            v-for="tool in group.tools"
+            :key="tool.label"
+            class="flex flex-col justify-between p-6 transition-shadow"
+            :class="[tool.disabled ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg cursor-pointer']"
+            variant="soft"
+          >
+            <div class="flex items-center space-x-4">
+              <UIcon v-if="tool.icon" :name="tool.icon" class="text-primary text-3xl" />
+              <h3 class="font-semibold text-lg">{{ tool.label }}</h3>
+            </div>
+            <p class="mt-4 text-sm text-muted">{{ tool.description }}</p>
+            <UButton
+              class="mt-6 self-start"
+              icon="i-heroicons-arrow-top-right-on-square"
+              variant="outline"
+              :to="tool.disabled ? undefined : tool.to"
+              :disabled="tool.disabled"
+            >
+              {{ tool.disabled ? 'Em breve' : 'Acessar' }}
+            </UButton>
+          </UCard>
+        </div>
+      </section>
     </div>
   </UContainer>
 </template>
