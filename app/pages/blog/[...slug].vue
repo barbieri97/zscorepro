@@ -34,13 +34,28 @@ onMounted(() => {
       <UCard variant="soft" class="pt-6 sm:p-10" v-if="page">
         <article class="prose prose-gray dark:prose-invert prose-headings:text-primary max-w-none">
           <header class="mb-10 text-center border-b border-gray-200 dark:border-gray-800 pb-8">
-            <img v-if="page.meta?.image" :src="page.meta.image" class="w-full h-64 md:h-96 object-cover rounded-xl mb-8 shadow-md" />
+            <NuxtImg v-if="page.meta?.image" :src="page.meta.image" class="w-full h-64 md:h-96 object-cover rounded-xl mb-8 shadow-md" />
             <h1 class="mb-4 text-4xl sm:text-5xl font-extrabold">{{ page.title }}</h1>
             <div class="flex items-center justify-center space-x-4">
               <p v-if="page.meta?.date" class="text-gray-500 dark:text-gray-400 text-sm font-mono uppercase tracking-wider">{{ page.meta.date }}</p>
             </div>
             <div v-if="page.meta?.tags" class="flex justify-center gap-2 mt-4">
               <UBadge v-for="tag in page.meta.tags" :key="tag" variant="soft" color="primary">{{ tag }}</UBadge>
+            </div>
+            
+            <div v-if="page.meta?.authorName" class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 flex justify-center">
+              <a :href="page.meta.authorInstagram || '#'" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-3 group hover:opacity-80 transition-all duration-200 hover:-translate-y-1">
+                <UAvatar v-if="page.meta.authorImage" :src="page.meta.authorImage" :alt="page.meta.authorName" size="xl" class="ring-4 ring-primary-500/10 group-hover:ring-primary-500/30 transition-all" />
+                <div class="text-center flex flex-col gap-1.5 mt-1">
+                  <div class="font-semibold text-lg text-gray-900 dark:text-white group-hover:text-primary transition-colors flex items-center justify-center gap-1 leading-none">
+                    {{ page.meta.authorName }}
+                  </div>
+                  <div v-if="page.meta.authorInstagram" class="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1.5 leading-none">
+                    <UIcon name="i-ph-instagram-logo" class="w-4 h-4" />
+                    @{{ page.meta.authorInstagram.split('/').pop() }}
+                  </div>
+                </div>
+              </a>
             </div>
           </header>
           

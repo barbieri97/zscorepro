@@ -59,7 +59,7 @@ const filteredPosts = computed(() => {
         variant="soft"
       >
         <template #header>
-           <img v-if="post.meta?.image" :src="post.meta.image" :alt="post.title" class="w-full h-48 object-cover" />
+           <NuxtImg v-if="post.meta?.image" :src="post.meta.image" :alt="post.title" class="w-full h-48 object-cover" />
         </template>
         
         <div class="p-6 flex flex-col flex-grow">
@@ -77,14 +77,26 @@ const filteredPosts = computed(() => {
         </div>
         
         <template #footer>
-          <UButton
-            :to="post.path"
-            variant="ghost"
-            icon="i-heroicons-arrow-right"
-            trailing
-          >
-            Ler Artigo
-          </UButton>
+          <div class="flex items-center justify-between w-full">
+            <div v-if="post.meta?.authorName" class="flex items-center gap-2.5">
+              <UAvatar v-if="post.meta.authorImage" :src="post.meta.authorImage" :alt="post.meta.authorName" size="sm" class="ring-1 ring-gray-200 dark:ring-gray-800" />
+              <div class="text-left leading-tight">
+                <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ post.meta.authorName }}</p>
+                <p v-if="post.meta.authorInstagram" class="text-[10px] text-gray-500 dark:text-gray-400">@{{ post.meta.authorInstagram.split('/').pop() }}</p>
+              </div>
+            </div>
+            <div v-else></div>
+            <UButton
+              :to="post.path"
+              variant="ghost"
+              icon="i-heroicons-arrow-right"
+              trailing
+              color="gray"
+              size="sm"
+            >
+              Ler Artigo
+            </UButton>
+          </div>
         </template>
       </UCard>
     </div>

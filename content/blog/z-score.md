@@ -4,6 +4,9 @@ description: "Aprenda o que é o Z-score, como calculá-lo e sua importância na
 date: "2026-04-02"
 image: "/blog/z-score-cover.png"
 tags: ["Estatística", "Prática Clínica"]
+authorName: "André Barbieri"
+authorImage: "/blog/authors/barbieri.jpg"
+authorInstagram: "https://instagram.com/barbieri.psi"
 ---
 
 # Entendendo o Z-Score em Avaliações Psicométricas

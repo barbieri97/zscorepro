@@ -4,6 +4,9 @@ description: "Descubra como um experimento físico simples demonstra de maneira 
 date: "2026-04-02"
 image: "/blog/galton-board-cover.png"
 tags: ["Teoria", "Simulações"]
+authorName: "André Barbieri"
+authorImage: "/blog/authors/barbieri.jpg"
+authorInstagram: "https://instagram.com/barbieri.psi"
 ---
 
 # O Tabuleiro de Galton e a Distribuição Normal

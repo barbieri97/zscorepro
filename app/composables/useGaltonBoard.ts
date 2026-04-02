@@ -12,6 +12,26 @@ export function useGaltonBoard() {
   const bins = ref<number[]>([])
   const totalBalls = ref(0)
 
+  // Curva normal teórica
+  const theoreticalCurve = computed(() => {
+    const M = ballCount.value > 0 ? ballCount.value : 100
+    // O valor médio é o centro de nossos bins
+    const mu = (config.binCount - 1) / 2
+    // Sigma calibrado para a dispersão visual resultante na simulação do MatterJS
+    const sigma = 2.4
+    
+    const data = []
+    let sum = 0
+    for (let i = 0; i < config.binCount; i++) {
+      const y = Math.exp(-0.5 * Math.pow((i - mu) / sigma, 2))
+      data.push(y)
+      sum += y
+    }
+    
+    // Normalizamos para que a área estrita da curva represente o total de bolas sendo jogadas
+    return data.map(y => (y / sum) * M)
+  })
+
   // Matter.js instances
   let engine: any = null
   let render: any = null
@@ -85,13 +105,29 @@ export function useGaltonBoard() {
         type: 'bar',
         data: {
           labels: Array.from({ length: config.binCount }, (_, i) => `${i}`),
-          datasets: [{
-            label: 'Número de bolas',
-            data: bins.value,
-            backgroundColor: 'rgba(99, 102, 241, 0.8)',
-            borderColor: 'rgba(99, 102, 241, 1)',
-            borderWidth: 1,
-          }]
+          datasets: [
+            {
+              type: 'bar',
+              label: 'Simulação (Bolas reais)',
+              data: bins.value,
+              backgroundColor: 'rgba(99, 102, 241, 0.8)',
+              borderColor: 'rgba(99, 102, 241, 1)',
+              borderWidth: 1,
+              order: 2
+            },
+            {
+              type: 'line',
+              label: 'Normal Teórica Estimada',
+              data: theoreticalCurve.value,
+              borderColor: 'rgba(234, 88, 12, 1)', // Laranja forte para destaque
+              backgroundColor: 'transparent',
+              borderWidth: 2.5,
+              tension: 0.4,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              order: 1
+            }
+          ]
         },
         options: {
           responsive: true,
@@ -108,7 +144,13 @@ export function useGaltonBoard() {
             }
           },
           plugins: {
-            legend: { display: false },
+            legend: { 
+              display: true,
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+              }
+            },
             tooltip: {
               callbacks: {
                 label: (context: any) => {
@@ -129,15 +171,18 @@ export function useGaltonBoard() {
   function updateChart() {
     if (chart && Chart) {
       chart.data.datasets[0].data = bins.value
+      chart.data.datasets[1].data = theoreticalCurve.value
       chart.update('none')
     }
   }
 
   watch(bins, () => {
-    if (chart) {
-      updateChart()
-    }
+    if (chart) updateChart()
   }, { deep: true })
+
+  watch(theoreticalCurve, () => {
+    if (chart && !isRunning.value) updateChart()
+  })
 
   function createPegs() {
     const { Bodies, World } = Matter
