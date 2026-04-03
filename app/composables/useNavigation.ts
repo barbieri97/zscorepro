@@ -78,8 +78,7 @@ export const useNavigation = () => {
           label: "Gerador de CPF",
           to: "/ferramentas/cpf",
           icon: "i-heroicons-identification",
-          description: "Gerador de números de CPF válidos para testes.",
-          disabled: true
+          description: "Gerador de números de CPF válidos para testes."
         },
         {
           label: "Gerador de Gráficos",
