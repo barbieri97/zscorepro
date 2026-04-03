@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
 const {
   canvasRef,
   chartCanvas,
@@ -10,10 +12,48 @@ const {
   pauseSimulation,
   resetSimulation
 } = useGaltonBoard()
+
+const showMobileWarning = ref(false)
+
+onMounted(() => {
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    showMobileWarning.value = true
+  }
+})
 </script>
 
 <template>
   <UContainer class="py-10 flex justify-center">
+    <UModal v-model:open="showMobileWarning">
+      <template #content>
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold leading-6">
+              Aviso de Resolução
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="showMobileWarning = false" />
+          </div>
+        </template>
+        
+        <div class="py-4 text-center space-y-4">
+          <UIcon name="i-heroicons-device-phone-mobile" class="w-12 h-12 mx-auto text-primary-500" />
+          <p class="text-sm">
+            Para uma melhor experiência com a simulação do Tabuleiro de Galton, recomendamos o uso de telas maiores (computador ou tablet).
+          </p>
+        </div>
+
+        <template #footer>
+          <div class="flex justify-end">
+            <UButton color="primary" @click="showMobileWarning = false">
+              Estou ciente
+            </UButton>
+          </div>
+        </template>
+      </UCard>
+      </template>
+    </UModal>
+
     <UCard class="w-full max-w-4xl">
       <!-- Header -->
       <template #header>

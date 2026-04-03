@@ -59,7 +59,7 @@ export const useNavigation = () => {
           to: "/calculadoras/rci",
           description: "Avalie se a mudança entre duas medições é significativa.",
           icon: "i-heroicons-arrows-right-left",
-          disabled: false // Changed from true to false so it can be accessed like in the old home page
+          disabled: true // Changed from true to false so it can be accessed like in the old home page
         }
       ]
     },
@@ -110,10 +110,10 @@ export const useNavigation = () => {
       .filter((item) => item.children && item.children.length > 0)
       .map((category) => {
         const flatChildren: NavItem[] = [];
-        
+
         category.children?.forEach((child) => {
           if (child.children) {
-             // Subcategory like Financeiro => push its children to the flat list
+            // Subcategory like Financeiro => push its children to the flat list
             flatChildren.push(...child.children);
           } else {
             flatChildren.push(child);

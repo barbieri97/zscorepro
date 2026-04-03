@@ -6,7 +6,7 @@ export function useGaltonBoard() {
   const toast = useToast()
 
   // Configurações da simulação
-  const ballCount = ref(300)
+  const ballCount = ref(500)
   const isRunning = ref(false)
   const isPaused = ref(false)
   const bins = ref<number[]>([])
@@ -19,7 +19,7 @@ export function useGaltonBoard() {
     const mu = (config.binCount - 1) / 2
     // Sigma calibrado para a dispersão visual resultante na simulação do MatterJS
     const sigma = 2.4
-    
+
     const data = []
     let sum = 0
     for (let i = 0; i < config.binCount; i++) {
@@ -27,7 +27,7 @@ export function useGaltonBoard() {
       data.push(y)
       sum += y
     }
-    
+
     // Normalizamos para que a área estrita da curva represente o total de bolas sendo jogadas
     return data.map(y => (y / sum) * M)
   })
@@ -52,13 +52,13 @@ export function useGaltonBoard() {
     binCount: 18,
     pegSpacing: 32,
     startY: 80,
-    binHeight: 320,
+    binHeight: 440,
     funnelWidth: 40,
   }
 
   async function initMatterJS() {
     Matter = await import("matter-js")
-    
+
     const { Engine, Render, World, Bodies, Runner, Events } = Matter
 
     engine = Engine.create({
@@ -66,7 +66,7 @@ export function useGaltonBoard() {
       enableSleeping: false,
     })
     world = engine.world
-    
+
     engine.positionIterations = 10
     engine.velocityIterations = 8
 
@@ -97,9 +97,9 @@ export function useGaltonBoard() {
   async function initChart() {
     const ChartModule = await import("chart.js/auto")
     Chart = ChartModule
-    
+
     await nextTick()
-    
+
     if (chartCanvas.value) {
       chart = new ChartModule.default(chartCanvas.value, {
         type: 'bar',
@@ -131,7 +131,7 @@ export function useGaltonBoard() {
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           aspectRatio: 2.5,
           scales: {
             y: {
@@ -144,7 +144,7 @@ export function useGaltonBoard() {
             }
           },
           plugins: {
-            legend: { 
+            legend: {
               display: true,
               position: 'top',
               labels: {
@@ -155,8 +155,8 @@ export function useGaltonBoard() {
               callbacks: {
                 label: (context: any) => {
                   const count = context.parsed.y
-                  const percentage = totalBalls.value > 0 
-                    ? ((count / totalBalls.value) * 100).toFixed(1) 
+                  const percentage = totalBalls.value > 0
+                    ? ((count / totalBalls.value) * 100).toFixed(1)
                     : '0.0'
                   return `${count} bolas (${percentage}%)`
                 }
@@ -208,35 +208,35 @@ export function useGaltonBoard() {
 
   function createWalls() {
     const { Bodies, World } = Matter
-    
+
     const firstRowPegs = 3
     const lastRowPegs = config.rows + 2
     const firstRowWidth = (firstRowPegs - 1) * config.pegSpacing
     const lastRowWidth = (lastRowPegs - 1) * config.pegSpacing
-    
+
     const topOffsetX = (config.width - firstRowWidth) / 2
     const bottomOffsetX = (config.width - lastRowWidth) / 2
-    
+
     const wallMargin = 12
-    
+
     const topY = config.startY - 40
     const bottomY = config.startY + (config.rows - 1) * config.pegSpacing
-    
+
     const leftTop = { x: topOffsetX - wallMargin, y: topY }
     const leftBottom = { x: bottomOffsetX - wallMargin, y: bottomY }
     const rightTop = { x: config.width - topOffsetX + wallMargin, y: topY }
     const rightBottom = { x: config.width - bottomOffsetX + wallMargin, y: bottomY }
-    
+
     const leftWallAngle = Math.atan2(leftBottom.y - leftTop.y, leftBottom.x - leftTop.x)
     const rightWallAngle = Math.atan2(rightBottom.y - rightTop.y, rightBottom.x - rightTop.x)
-    
+
     const leftWallLength = Math.sqrt(
       Math.pow(leftBottom.x - leftTop.x, 2) + Math.pow(leftBottom.y - leftTop.y, 2)
     )
     const rightWallLength = Math.sqrt(
       Math.pow(rightBottom.x - rightTop.x, 2) + Math.pow(rightBottom.y - rightTop.y, 2)
     )
-    
+
     const wallOptions = {
       isStatic: true,
       friction: 0,
@@ -246,7 +246,7 @@ export function useGaltonBoard() {
         opacity: 0.8,
       },
     }
-    
+
     const leftDiagonalWall = Bodies.rectangle(
       (leftTop.x + leftBottom.x) / 2,
       (leftTop.y + leftBottom.y) / 2,
@@ -254,7 +254,7 @@ export function useGaltonBoard() {
       8,
       { ...wallOptions, angle: leftWallAngle }
     )
-    
+
     const rightDiagonalWall = Bodies.rectangle(
       (rightTop.x + rightBottom.x) / 2,
       (rightTop.y + rightBottom.y) / 2,
@@ -262,63 +262,63 @@ export function useGaltonBoard() {
       8,
       { ...wallOptions, angle: rightWallAngle }
     )
-    
+
     const wallHeight = config.height - bottomY
     const wallThickness = 10
-    
+
     const leftWall = Bodies.rectangle(
-      -wallThickness / 2, 
-      bottomY + wallHeight / 2, 
-      wallThickness, 
-      wallHeight, 
+      -wallThickness / 2,
+      bottomY + wallHeight / 2,
+      wallThickness,
+      wallHeight,
       wallOptions
     )
     const rightWall = Bodies.rectangle(
-      config.width + wallThickness / 2, 
-      bottomY + wallHeight / 2, 
-      wallThickness, 
-      wallHeight, 
+      config.width + wallThickness / 2,
+      bottomY + wallHeight / 2,
+      wallThickness,
+      wallHeight,
       wallOptions
     )
-    
+
     World.add(world, [leftDiagonalWall, rightDiagonalWall, leftWall, rightWall])
   }
 
   function createBins() {
     const { Bodies, World } = Matter
     bins.value = new Array(config.binCount).fill(0)
-    
+
     const binWidth = config.width / config.binCount
     const lastPegRowY = config.startY + (config.rows - 1) * config.pegSpacing
     const binStartY = lastPegRowY + config.pegRadius + 10
     const binY = binStartY
-    
+
     const dividerOptions = {
       isStatic: true,
       render: { fillStyle: "#9ca3af" },
     }
 
     for (let i = 1; i < config.binCount; i++) {
-        const x = i * binWidth
-        const divider = Bodies.rectangle(x, binY + config.binHeight / 2, 1.5, config.binHeight, dividerOptions)
-        World.add(world, divider)
-      }
+      const x = i * binWidth
+      const divider = Bodies.rectangle(x, binY + config.binHeight / 2, 1.5, config.binHeight, dividerOptions)
+      World.add(world, divider)
+    }
 
-      const bottom = Bodies.rectangle(
-        config.width / 2,
-        binY + config.binHeight,
-        config.width,
-        20,
-        { isStatic: true, render: { fillStyle: "#374151" } }
-      )
-      World.add(world, bottom)
+    const bottom = Bodies.rectangle(
+      config.width / 2,
+      binY + config.binHeight,
+      config.width,
+      20,
+      { isStatic: true, render: { fillStyle: "#374151" } }
+    )
+    World.add(world, bottom)
   }
 
   function dropBall() {
     if (!Matter) return
 
     const { Bodies, World } = Matter
-    
+
     const startX = config.width / 2 + (Math.random() - 0.5) * config.funnelWidth
     const startY = 20
 
@@ -338,27 +338,27 @@ export function useGaltonBoard() {
 
   function handleCollision(event: any) {
     const pairs = event.pairs
-    
+
     const lastPegRowY = config.startY + (config.rows - 1) * config.pegSpacing
     const binY = lastPegRowY + config.pegRadius + 10
 
     pairs.forEach((pair: any) => {
       const { bodyA, bodyB } = pair
-      
+
       // Verification Fix: Check isCounted so ball hits the bin only exactly once.
       if (bodyA.label === "ball" && !bodyA.isCounted && bodyA.position.y > binY) {
         bodyA.isCounted = true
         const binIndex = Math.floor((bodyA.position.x / config.width) * config.binCount)
         if (binIndex >= 0 && binIndex < config.binCount) {
-           bins.value[binIndex] = (bins.value[binIndex] ?? 0) + 1
+          bins.value[binIndex] = (bins.value[binIndex] ?? 0) + 1
         }
       }
-      
+
       if (bodyB.label === "ball" && !bodyB.isCounted && bodyB.position.y > binY) {
         bodyB.isCounted = true
         const binIndex = Math.floor((bodyB.position.x / config.width) * config.binCount)
         if (binIndex >= 0 && binIndex < config.binCount) {
-           bins.value[binIndex] = (bins.value[binIndex] ?? 0) + 1
+          bins.value[binIndex] = (bins.value[binIndex] ?? 0) + 1
         }
       }
     })
@@ -379,13 +379,13 @@ export function useGaltonBoard() {
 
     isRunning.value = true
     isPaused.value = false
-    
+
     let dropped = 0
     dropInterval = setInterval(() => {
       if (!isPaused.value) {
         dropBall()
         dropped++
-        
+
         if (dropped >= ballCount.value) {
           clearInterval(dropInterval)
           setTimeout(() => {
@@ -398,7 +398,7 @@ export function useGaltonBoard() {
 
   function pauseSimulation() {
     isPaused.value = !isPaused.value
-    
+
     toast.add({
       title: isPaused.value ? "Pausado" : "Retomado",
       icon: isPaused.value ? "i-heroicons-pause" : "i-heroicons-play",
@@ -410,10 +410,10 @@ export function useGaltonBoard() {
     if (dropInterval) {
       clearInterval(dropInterval)
     }
-    
+
     if (Matter && world) {
       const { World, Composite } = Matter
-      
+
       const bodies = Composite.allBodies(world)
       bodies.forEach((body: any) => {
         if (body.label === "ball") {
@@ -421,12 +421,12 @@ export function useGaltonBoard() {
         }
       })
     }
-    
+
     bins.value = new Array(config.binCount).fill(0)
     totalBalls.value = 0
     isRunning.value = false
     isPaused.value = false
-    
+
     toast.add({
       title: "Simulação reiniciada",
       icon: "i-heroicons-arrow-path",
@@ -436,7 +436,7 @@ export function useGaltonBoard() {
 
   onMounted(async () => {
     bins.value = new Array(config.binCount).fill(0)
-    
+
     await initMatterJS()
     await initChart()
   })
@@ -445,13 +445,13 @@ export function useGaltonBoard() {
     if (dropInterval) {
       clearInterval(dropInterval)
     }
-    
+
     if (Matter && render) {
       const { Render, Runner } = Matter
       Render.stop(render)
       Runner.stop(render.runner)
     }
-    
+
     if (chart) {
       chart.destroy()
     }
