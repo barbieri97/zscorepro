@@ -1,317 +1,44 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { onMounted } from "vue";
 
-/* Tipos */
-interface Person {
-  id: number;
-  name: string;
-  amount: number;
-  responsibleFor: number; // Quantas pessoas esta pessoa paga (incluindo ela mesma)
-}
+const {
+  participants,
+  purchases,
+  addParticipant,
+  removeParticipant,
+  addPurchase,
+  removePurchase,
+  loadFromLocalStorage,
+  clearAll,
+  copyResults,
+  totalAmount,
+  totalParticipants,
+  totalUnits,
+  costPerUnit,
+  results,
+  suggestedTransfers,
+  getStatusColor,
+  getCardClass,
+  getStatusIcon,
+  getStatusText,
+  participantName,
+} = useGroupExpense();
 
-interface AppState {
-  people: Person[];
-  nextId: number;
-}
+onMounted(() => loadFromLocalStorage());
 
-/* Constantes */
-const STORAGE_KEY = "group-expense-splitter";
-
-/* Estado */
-const people = ref<Person[]>([
-  { id: 1, name: "", amount: 0, responsibleFor: 1 },
-  { id: 2, name: "", amount: 0, responsibleFor: 1 },
-]);
-let nextId = 3;
-
-const toast = useToast();
-
-/* Local Storage Functions */
-function saveToLocalStorage() {
-  try {
-    const state: AppState = {
-      people: people.value,
-      nextId: nextId,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (error) {
-    console.error("Erro ao salvar no localStorage:", error);
-    toast.add({
-      title: "Erro ao salvar",
-      description: "Não foi possível salvar os dados localmente",
-      icon: "i-heroicons-exclamation-triangle",
-      color: "error",
-    });
-  }
-}
-
-function loadFromLocalStorage() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const state: AppState = JSON.parse(saved);
-      // Migração: adicionar responsibleFor se não existir
-      people.value = state.people.map((p) => ({
-        ...p,
-        responsibleFor: p.responsibleFor || 1,
-      }));
-      nextId = state.nextId;
-    }
-  } catch (error) {
-    console.error("Erro ao carregar do localStorage:", error);
-    toast.add({
-      title: "Erro ao carregar",
-      description: "Não foi possível carregar os dados salvos",
-      icon: "i-heroicons-exclamation-triangle",
-      color: "warning",
-    });
-  }
-}
-
-function clearLocalStorage() {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    people.value = [
-      { id: 1, name: "", amount: 0, responsibleFor: 1 },
-      { id: 2, name: "", amount: 0, responsibleFor: 1 },
-    ];
-    nextId = 3;
-    toast.add({
-      title: "Dados limpos",
-      description: "Todos os dados foram removidos",
-      icon: "i-heroicons-check-circle",
-      color: "success",
-    });
-  } catch (error) {
-    console.error("Erro ao limpar localStorage:", error);
-  }
-}
-
-/* Lifecycle */
-onMounted(() => {
-  loadFromLocalStorage();
-});
-
-/* Watch para salvar automaticamente */
-watch(
-  people,
-  () => {
-    saveToLocalStorage();
-  },
-  { deep: true },
+/* Opções do select de pagador para cada compra */
+const participantOptions = computed(() =>
+  participants.value.map((p) => ({
+    label: p.name || "Sem nome",
+    value: p.id,
+  }))
 );
-
-/* Adicionar pessoa */
-function addPerson() {
-  people.value.push({
-    id: nextId++,
-    name: "",
-    amount: 0,
-    responsibleFor: 1,
-  });
-  saveToLocalStorage();
-}
-
-/* Remover pessoa */
-function removePerson(id: number) {
-  if (people.value.length <= 1) {
-    toast.add({
-      title: "Atenção",
-      description: "É necessário ter pelo menos 1 pessoa",
-      icon: "i-heroicons-exclamation-triangle",
-      color: "warning",
-    });
-    return;
-  }
-  people.value = people.value.filter((p) => p.id !== id);
-  saveToLocalStorage();
-}
-
-/* Cálculos */
-const totalAmount = computed(() => {
-  return people.value.reduce((sum, person) => sum + (person.amount || 0), 0);
-});
-
-const totalPeople = computed(() => {
-  return people.value.reduce(
-    (sum, person) => sum + (person.responsibleFor || 1),
-    0,
-  );
-});
-
-const fairAmount = computed(() => {
-  return totalPeople.value > 0 ? totalAmount.value / totalPeople.value : 0;
-});
-
-const results = computed(() => {
-  return people.value.map((person) => {
-    const personResponsibleFor = person.responsibleFor || 1;
-    const shouldPay = fairAmount.value * personResponsibleFor;
-    const difference = (person.amount || 0) - shouldPay;
-
-    return {
-      ...person,
-      shouldPay,
-      difference,
-      status:
-        difference > 0.01 ? "receive" : difference < -0.01 ? "pay" : "even",
-    };
-  });
-});
-
-/* Copiar para área de transferência */
-function copyResults() {
-  const text = results.value
-    .map((r) => {
-      const name = r.name || "Sem nome";
-      const peopleText =
-        r.responsibleFor > 1 ? ` (${r.responsibleFor} pessoas)` : "";
-
-      if (r.status === "even") {
-        return `${name}${peopleText}: Quitado`;
-      } else if (r.status === "receive") {
-        return `${name}${peopleText}: Deve receber R$ ${Math.abs(r.difference).toFixed(2)}`;
-      } else {
-        return `${name}${peopleText}: Deve pagar R$ ${Math.abs(r.difference).toFixed(2)}`;
-      }
-    })
-    .join("\n");
-
-  // Adicionar transferências se houver
-  let transfersText = "";
-  if (suggestedTransfers.value.length > 0) {
-    transfersText =
-      "\n\nSugestão de Transferências:\n" +
-      suggestedTransfers.value
-        .map(
-          (t, index) =>
-            `${index + 1}. ${t.from} → ${t.to}: R$ ${t.amount.toFixed(2)}`,
-        )
-        .join("\n");
-  }
-
-  const summary = `Divisão de Gastos em Grupo\n\nTotal de pessoas: ${totalPeople.value}\nTotal gasto: R$ ${totalAmount.value.toFixed(2)}\nValor justo por pessoa: R$ ${fairAmount.value.toFixed(2)}\n\nAcerto de contas:\n${text}${transfersText}`;
-
-  navigator.clipboard.writeText(summary);
-
-  toast.add({
-    title: "Copiado para a área de transferência",
-    description: "Resumo completo da divisão copiado",
-    icon: "i-heroicons-check-circle",
-    color: "success",
-  });
-}
-
-/* Classes de cor */
-function getStatusColor(status: string) {
-  switch (status) {
-    case "receive":
-      return "text-green-600 dark:text-green-400";
-    case "pay":
-      return "text-red-600 dark:text-red-400";
-    default:
-      return "text-gray-600 dark:text-gray-400";
-  }
-}
-
-function getCardClass(status: string) {
-  switch (status) {
-    case "receive":
-      return "bg-green-100 dark:bg-green-950/20 border-green-300 dark:border-green-800";
-    case "pay":
-      return "bg-red-100 dark:bg-red-950/20 border-red-300 dark:border-red-800";
-    default:
-      return "bg-gray-100 dark:bg-gray-950/20 border-gray-300 dark:border-gray-800";
-  }
-}
-
-function getStatusIcon(status: string) {
-  switch (status) {
-    case "receive":
-      return "i-heroicons-arrow-down-circle";
-    case "pay":
-      return "i-heroicons-arrow-up-circle";
-    default:
-      return "i-heroicons-check-circle";
-  }
-}
-
-function getStatusText(status: string, difference: number) {
-  if (status === "even") {
-    return "Quitado";
-  } else if (status === "receive") {
-    return `Deve receber R$ ${Math.abs(difference).toFixed(2)}`;
-  } else {
-    return `Deve pagar R$ ${Math.abs(difference).toFixed(2)}`;
-  }
-}
-
-/* Algoritmo de transferências */
-interface Transfer {
-  from: string;
-  to: string;
-  amount: number;
-}
-
-const suggestedTransfers = computed<Transfer[]>(() => {
-  // Separar quem deve pagar e quem deve receber
-  const payers = results.value
-    .filter((r) => r.status === "pay")
-    .map((r) => ({
-      name: r.name || "Sem nome",
-      amount: Math.abs(r.difference),
-    }))
-    .sort((a, b) => b.amount - a.amount);
-
-  const receivers = results.value
-    .filter((r) => r.status === "receive")
-    .map((r) => ({
-      name: r.name || "Sem nome",
-      amount: Math.abs(r.difference),
-    }))
-    .sort((a, b) => b.amount - a.amount);
-
-  const transfers: Transfer[] = [];
-
-  // Copiar arrays para não modificar os originais
-  const payersCopy = payers.map((p) => ({ ...p }));
-  const receiversCopy = receivers.map((r) => ({ ...r }));
-
-  // Algoritmo greedy: emparelhar maiores dívidas com maiores créditos
-  let i = 0;
-  let j = 0;
-
-  while (i < payersCopy.length && j < receiversCopy.length) {
-    const payer = payersCopy[i];
-    const receiver = receiversCopy[j];
-
-    // Validação TypeScript
-    if (!payer || !receiver) break;
-
-    const transferAmount = Math.min(payer.amount, receiver.amount);
-
-    if (transferAmount > 0.01) {
-      transfers.push({
-        from: payer.name,
-        to: receiver.name,
-        amount: transferAmount,
-      });
-    }
-
-    payer.amount -= transferAmount;
-    receiver.amount -= transferAmount;
-
-    if (payer.amount < 0.01) i++;
-    if (receiver.amount < 0.01) j++;
-  }
-
-  return transfers;
-});
 </script>
 
 <template>
   <UContainer class="py-10 flex justify-center">
     <UCard class="w-full max-w-4xl">
+
       <!-- Header -->
       <template #header>
         <div class="flex items-center justify-between">
@@ -319,83 +46,138 @@ const suggestedTransfers = computed<Transfer[]>(() => {
             <UIcon name="i-heroicons-scale" class="text-2xl text-primary" />
             <h2 class="text-lg font-semibold">Divisão de Gastos em Grupo</h2>
           </div>
-
           <UButton
             icon="i-heroicons-trash"
             size="sm"
             color="error"
             variant="ghost"
             title="Limpar todos os dados"
-            @click="clearLocalStorage"
+            @click="clearAll"
           >
             Limpar tudo
           </UButton>
         </div>
       </template>
 
-      <!-- Adicionar pessoas -->
-      <div class="space-y-4 mb-6">
+      <!-- ─── PARTICIPANTES ─── -->
+      <section class="space-y-3 mb-8">
         <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-sm font-medium text-muted">
-              Pessoas responsáveis ({{ people.length }})
-            </h3>
-            <p class="text-xs text-muted mt-1">
-              Total de pessoas no grupo: {{ totalPeople }}
-            </p>
-          </div>
+          <h3 class="text-sm font-semibold text-muted uppercase tracking-wide">
+            Participantes ({{ participants.length }})
+          </h3>
+          <UButton
+            icon="i-heroicons-user-plus"
+            size="sm"
+            variant="soft"
+            @click="addParticipant"
+          >
+            Adicionar
+          </UButton>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <UCard
+            v-for="participant in participants"
+            :key="participant.id"
+            variant="soft"
+            class="border flex-shrink-0"
+          >
+            <div class="flex items-center gap-2">
+              <UIcon name="i-heroicons-user-circle" class="text-xl text-primary flex-shrink-0" />
+              <UInput
+                v-model="participant.name"
+                placeholder="Nome"
+                size="sm"
+                class="w-28"
+              />
+              <UFormField label="" help="Pessoas cobertas">
+                <UInput
+                  v-model.number="participant.coversCount"
+                  type="number"
+                  :min="1"
+                  step="1"
+                  size="sm"
+                  class="w-16"
+                  title="Quantas pessoas este participante representa"
+                >
+                  <template #leading>
+                    <UIcon name="i-heroicons-users" class="text-muted" />
+                  </template>
+                </UInput>
+              </UFormField>
+              <UButton
+                icon="i-heroicons-x-mark"
+                color="error"
+                variant="ghost"
+                size="xs"
+                :disabled="participants.length <= 1"
+                @click="removeParticipant(participant.id)"
+              />
+            </div>
+          </UCard>
+        </div>
+      </section>
+
+      <USeparator class="my-6" />
+
+      <!-- ─── COMPRAS ─── -->
+      <section class="space-y-3 mb-8">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-muted uppercase tracking-wide">
+            Compras ({{ purchases.length }})
+          </h3>
           <UButton
             icon="i-heroicons-plus"
             size="sm"
             variant="soft"
-            @click="addPerson"
+            @click="addPurchase"
           >
-            Adicionar pessoa
+            Adicionar compra
           </UButton>
         </div>
 
-        <!-- Lista de pessoas -->
         <div class="space-y-3">
           <UCard
-            v-for="person in people"
-            :key="person.id"
+            v-for="(purchase, index) in purchases"
+            :key="purchase.id"
             variant="soft"
             class="border"
           >
             <div class="flex items-start gap-3">
-              <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
-                <UFormField label="Nome">
-                  <UInput v-model="person.name" placeholder="Ex: João" />
-                </UFormField>
+              <!-- Número da compra -->
+              <UBadge
+                :label="`${index + 1}`"
+                color="primary"
+                variant="solid"
+                class="mt-1 flex-shrink-0"
+              />
 
-                <UFormField label="Valor gasto (R$)">
+              <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <UFormField label="Descrição">
                   <UInput
-                    v-model.number="person.amount"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
+                    v-model="purchase.description"
+                    placeholder="Ex: Jantar, supermercado…"
                   />
                 </UFormField>
 
-                <UFormField label="Paga por quantas pessoas?">
+                <UFormField label="Valor (R$)">
                   <UInput
-                    v-model.number="person.responsibleFor"
+                    v-model.number="purchase.amount"
                     type="number"
-                    step="1"
-                    min="1"
-                    placeholder="1"
-                  >
-                    <template #trailing>
-                      <span class="text-xs text-muted">
-                        {{
-                          person.responsibleFor > 1
-                            ? `${person.responsibleFor} pessoas`
-                            : "pessoa"
-                        }}
-                      </span>
-                    </template>
-                  </UInput>
+                    step="0.01"
+                    min="0"
+                    placeholder="0,00"
+                  />
+                </UFormField>
+
+                <UFormField label="Pago por">
+                  <USelect
+                    v-model="purchase.paidById"
+                    :items="participantOptions"
+                    value-key="value"
+                    label-key="label"
+                    placeholder="Selecionar…"
+                  />
                 </UFormField>
               </div>
 
@@ -405,168 +187,144 @@ const suggestedTransfers = computed<Transfer[]>(() => {
                 variant="ghost"
                 size="sm"
                 class="mt-6"
-                :disabled="people.length <= 1"
-                @click="removePerson(person.id)"
+                :disabled="purchases.length <= 1"
+                @click="removePurchase(purchase.id)"
               />
             </div>
           </UCard>
         </div>
-      </div>
+      </section>
 
-      <!-- Resumo -->
-      <div v-if="totalAmount > 0" class="space-y-4 mt-8">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-medium text-muted">Resumo</h3>
-          <UButton
-            icon="i-heroicons-clipboard"
-            size="sm"
-            variant="ghost"
-            @click="copyResults"
-          >
-            Copiar resumo
-          </UButton>
-        </div>
+      <!-- ─── RESUMO ─── -->
+      <template v-if="totalAmount > 0">
+        <USeparator class="my-6" />
 
-        <!-- Cards de resumo -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <UCard variant="soft" class="bg-primary/10">
-            <div>
-              <p class="text-sm text-muted">Total de pessoas</p>
-              <p class="font-semibold text-2xl text-primary">
-                {{ totalPeople }}
-              </p>
-            </div>
-          </UCard>
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-muted uppercase tracking-wide">Resumo</h3>
+            <UButton
+              icon="i-heroicons-clipboard"
+              size="sm"
+              variant="ghost"
+              @click="copyResults"
+            >
+              Copiar resumo
+            </UButton>
+          </div>
 
-          <UCard variant="soft" class="bg-primary/10">
-            <div>
-              <p class="text-sm text-muted">Total gasto</p>
-              <p class="font-semibold text-2xl text-primary">
-                R$ {{ totalAmount.toFixed(2) }}
-              </p>
-            </div>
-          </UCard>
-
-          <UCard variant="soft" class="bg-primary/10">
-            <div>
-              <p class="text-sm text-muted">Valor justo por pessoa</p>
-              <p class="font-semibold text-2xl text-primary">
-                R$ {{ fairAmount.toFixed(2) }}
-              </p>
-            </div>
-          </UCard>
-        </div>
-
-        <!-- Resultados individuais -->
-        <div class="space-y-3 mt-6">
-          <h3 class="text-sm font-medium text-muted">Acerto de contas</h3>
-
-          <UCard
-            v-for="result in results"
-            :key="result.id"
-            :class="getCardClass(result.status)"
-            class="border-2"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <UIcon
-                  :name="getStatusIcon(result.status)"
-                  :class="getStatusColor(result.status)"
-                  class="text-2xl"
-                />
-                <div>
-                  <div class="flex items-center gap-2">
-                    <p class="font-semibold">
-                      {{ result.name || "Sem nome" }}
-                    </p>
-                    <UBadge
-                      v-if="result.responsibleFor > 1"
-                      :label="`${result.responsibleFor} pessoas`"
-                      color="primary"
-                      variant="soft"
-                      size="xs"
-                    />
-                  </div>
-                  <p class="text-sm text-muted">
-                    Gastou: R$ {{ (result.amount || 0).toFixed(2) }} · Deveria
-                    pagar: R$ {{ result.shouldPay.toFixed(2) }}
-                  </p>
-                </div>
+          <!-- Cards de totais -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <UCard variant="soft" class="bg-primary/10">
+              <div>
+                <p class="text-sm text-muted">Responsáveis</p>
+                <p class="font-semibold text-2xl text-primary">{{ totalParticipants }}</p>
               </div>
+            </UCard>
+            <UCard variant="soft" class="bg-primary/10">
+              <div>
+                <p class="text-sm text-muted">Total de pessoas</p>
+                <p class="font-semibold text-2xl text-primary">{{ totalUnits }}</p>
+              </div>
+            </UCard>
+            <UCard variant="soft" class="bg-primary/10">
+              <div>
+                <p class="text-sm text-muted">Total gasto</p>
+                <p class="font-semibold text-2xl text-primary">R$ {{ totalAmount.toFixed(2) }}</p>
+              </div>
+            </UCard>
+            <UCard variant="soft" class="bg-primary/10">
+              <div>
+                <p class="text-sm text-muted">Custo por pessoa</p>
+                <p class="font-semibold text-2xl text-primary">R$ {{ costPerUnit.toFixed(2) }}</p>
+              </div>
+            </UCard>
+          </div>
 
-              <div class="text-right">
-                <p
-                  :class="getStatusColor(result.status)"
-                  class="font-semibold text-lg"
-                >
+          <!-- Acerto de contas -->
+          <div class="space-y-3 mt-6">
+            <h3 class="text-sm font-medium text-muted">Acerto de contas</h3>
+
+            <UCard
+              v-for="result in results"
+              :key="result.participant.id"
+              :class="getCardClass(result.status)"
+              class="border-2"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <UIcon
+                    :name="getStatusIcon(result.status)"
+                    :class="getStatusColor(result.status)"
+                    class="text-2xl"
+                  />
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <p class="font-semibold">{{ result.participant.name || "Sem nome" }}</p>
+                      <UBadge
+                        v-if="result.participant.coversCount > 1"
+                        :label="`${result.participant.coversCount} pessoas`"
+                        color="primary"
+                        variant="soft"
+                        size="xs"
+                      />
+                    </div>
+                    <p class="text-sm text-muted">
+                      Pagou: R$ {{ result.totalPaid.toFixed(2) }} ·
+                      Deveria pagar: R$ {{ result.shouldPay.toFixed(2) }}
+                    </p>
+                  </div>
+                </div>
+                <p :class="getStatusColor(result.status)" class="font-semibold text-lg text-right">
                   {{ getStatusText(result.status, result.difference) }}
                 </p>
               </div>
-            </div>
-          </UCard>
-        </div>
+            </UCard>
+          </div>
 
-        <!-- Sugestões de transferências -->
-        <div v-if="suggestedTransfers.length > 0" class="space-y-3 mt-8">
-          <div class="flex items-center justify-between">
+          <!-- Sugestões de transferências -->
+          <div v-if="suggestedTransfers.length > 0" class="space-y-3 mt-8">
             <h3 class="text-sm font-medium text-muted">
               Sugestão de Transferências ({{ suggestedTransfers.length }})
             </h3>
-          </div>
 
-          <UCard
-            v-for="(transfer, index) in suggestedTransfers"
-            :key="index"
-            variant="soft"
-            class="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-300 dark:border-blue-800"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2">
-                  <UBadge
-                    :label="`${index + 1}`"
-                    color="primary"
-                    variant="solid"
-                  />
+            <UCard
+              v-for="(transfer, index) in suggestedTransfers"
+              :key="index"
+              variant="soft"
+              class="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-300 dark:border-blue-800"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <UBadge :label="`${index + 1}`" color="primary" variant="solid" />
                   <span class="font-medium">{{ transfer.from }}</span>
+                  <UIcon name="i-heroicons-arrow-right" class="text-blue-600 dark:text-blue-400 text-xl" />
+                  <span class="font-medium">{{ transfer.to }}</span>
                 </div>
-                <UIcon
-                  name="i-heroicons-arrow-right"
-                  class="text-blue-600 dark:text-blue-400 text-xl"
-                />
-                <span class="font-medium">{{ transfer.to }}</span>
-              </div>
-
-              <div class="text-right">
-                <p
-                  class="font-semibold text-lg text-blue-600 dark:text-blue-400"
-                >
+                <p class="font-semibold text-lg text-blue-600 dark:text-blue-400">
                   R$ {{ transfer.amount.toFixed(2) }}
                 </p>
               </div>
-            </div>
-          </UCard>
+            </UCard>
 
-          <UAlert
-            icon="i-heroicons-light-bulb"
-            color="primary"
-            variant="soft"
-            title="Dica"
-            description="Estas são as transferências mais eficientes para equilibrar todas as contas do grupo."
-          />
-        </div>
-      </div>
+            <UAlert
+              icon="i-heroicons-light-bulb"
+              color="primary"
+              variant="soft"
+              title="Dica"
+              description="Estas são as transferências mais eficientes para equilibrar todas as contas do grupo."
+            />
+          </div>
+        </section>
+      </template>
 
       <!-- Estado vazio -->
-      <div v-else class="text-center py-8">
-        <UIcon
-          name="i-heroicons-banknotes"
-          class="text-6xl text-gray-400 mx-auto mb-4"
-        />
-        <p class="text-muted">
-          Adicione os valores gastos para calcular a divisão
-        </p>
-      </div>
+      <template v-else>
+        <div class="text-center py-10">
+          <UIcon name="i-heroicons-banknotes" class="text-6xl text-gray-400 mx-auto mb-4" />
+          <p class="text-muted">Adicione os valores das compras para calcular a divisão</p>
+        </div>
+      </template>
+
     </UCard>
   </UContainer>
 </template>
