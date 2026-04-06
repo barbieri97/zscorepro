@@ -28,7 +28,8 @@ function calculateAgeDiff(birth: Date, refDate: Date) {
     years -= 1
     months += 12
   }
-  return { years, months, days }
+  const totalMonths = (years * 12) + months
+  return { years, months, days, totalMonths }
 }
 
 /* Cálculo da idade cronológica */
@@ -136,11 +137,12 @@ function copyAge(label: string, value: string) {
           <div class="flex items-center justify-between p-3 border rounded">
             <div>
               <p class="font-semibold text-lg">{{ age.years }} anos {{ age.months }} meses e {{ age.days }} dias</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Ou {{ age.totalMonths }} meses</p>
             </div>
             <UButton
               icon="i-heroicons-clipboard"
               variant="ghost"
-              @click="copyAge('Idade Cronológica', `${age.years} anos ${age.months} meses e ${age.days} dias`)"
+              @click="copyAge('Idade Cronológica', `${age.years} anos ${age.months} meses e ${age.days} dias (${age.totalMonths} meses no total)`)"
             />
           </div>
         </div>
@@ -158,6 +160,7 @@ function copyAge(label: string, value: string) {
               </template>
               <template v-else-if="correctedAge">
                 <p class="font-semibold text-lg">{{ correctedAge.years }} anos {{ correctedAge.months }} meses e {{ correctedAge.days }} dias</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Ou {{ correctedAge.totalMonths }} meses</p>
               </template>
             </div>
             <UButton
@@ -165,7 +168,7 @@ function copyAge(label: string, value: string) {
               icon="i-heroicons-clipboard"
               variant="ghost"
               color="primary"
-              @click="copyAge('Idade Corrigida', `${correctedAge.years} anos ${correctedAge.months} meses e ${correctedAge.days} dias`)"
+              @click="copyAge('Idade Corrigida', `${correctedAge.years} anos ${correctedAge.months} meses e ${correctedAge.days} dias (${correctedAge.totalMonths} meses no total)`)"
             />
           </div>
         </div>
