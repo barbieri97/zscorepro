@@ -98,6 +98,12 @@ export const useNavigation = () => {
           description: "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
           to: "/simulacoes/galton-board",
           icon: "i-heroicons-chart-bar"
+        },
+        {
+          label: "Torre de Hanói",
+          description: "Simulação do clássico teste neuropsicológico de planejamento. Mova todos os discos para outro pino com o menor número de movimentos possível.",
+          to: "/simulacoes/torre-hanoi",
+          icon: "i-heroicons-puzzle-piece"
         }
       ]
     }

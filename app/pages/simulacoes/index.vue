@@ -1,11 +1,17 @@
 <script setup lang="ts">
 const tools = [
-      {
-        label: "Tabuleiro de Galton",
-        description: "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
-        link: "/simulacoes/galton-board",
-        icon: "i-heroicons-chart-bar"
-      }
+  {
+    label: "Tabuleiro de Galton",
+    description: "Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal.",
+    link: "/simulacoes/galton-board",
+    icon: "i-heroicons-chart-bar"
+  },
+  {
+    label: "Torre de Hanói",
+    description: "Simulação do clássico teste neuropsicológico de planejamento. Mova todos os discos para outro pino com o menor número de movimentos possível.",
+    link: "/simulacoes/torre-hanoi",
+    icon: "i-heroicons-puzzle-piece"
+  }
 ]
 </script>
 
