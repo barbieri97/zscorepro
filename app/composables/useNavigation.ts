@@ -104,6 +104,12 @@ export const useNavigation = () => {
           description: "Simulação do clássico teste neuropsicológico de planejamento. Mova todos os discos para outro pino com o menor número de movimentos possível.",
           to: "/simulacoes/torre-hanoi",
           icon: "i-heroicons-puzzle-piece"
+        },
+        {
+          label: "Tarefa de Simon",
+          description: "Simulação do Spatial Stroop Task: responda à direção da seta ignorando sua posição na tela. Mede o controle inibitório e o tempo de reação.",
+          to: "/simulacoes/simon-task",
+          icon: "i-heroicons-bolt"
         }
       ]
     }
