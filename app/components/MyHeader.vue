@@ -1,5 +1,14 @@
 <script setup lang="ts">
-const { items } = useNavigation();
+const { items } = useNavigation()
+const { user, isLoggedIn, signOut } = useAuth()
+
+const showAuth = ref(false)
+const toast = useToast()
+
+async function handleSignOut() {
+  await signOut()
+  toast.add({ title: 'Até logo!', description: 'Você saiu da sua conta.', color: 'success' })
+}
 </script>
 
 <template>
@@ -23,11 +32,38 @@ const { items } = useNavigation();
           aria-label="GitHub"
         />
       </UTooltip>
+
+      <!-- Auth: logged in -->
+      <UDropdownMenu
+        v-if="isLoggedIn"
+        :items="[[{ label: 'Sair', icon: 'i-lucide-log-out', onSelect: handleSignOut }]]"
+      >
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-circle-user-round"
+          :label="user?.email?.split('@')[0]"
+          trailing-icon="i-lucide-chevron-down"
+          size="sm"
+        />
+      </UDropdownMenu>
+
+      <!-- Auth: not logged in -->
+      <UButton
+        v-else
+        size="sm"
+        variant="outline"
+        icon="i-lucide-log-in"
+        label="Entrar"
+        @click="showAuth = true"
+      />
     </template>
 
-    
     <template #body>
       <UNavigationMenu :items="items" orientation="vertical" class="-mx-2.5" />
     </template>
   </UHeader>
+
+  <AuthModal v-model:open="showAuth" />
 </template>
+

@@ -27,6 +27,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       appVersion: process.env.npm_package_version || "1.0.0",
+      supabaseUrl: '',
+      supabaseKey: '',
     },
   },
 });
