@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { items } = useNavigation()
-const { user, isLoggedIn, signOut } = useAuth()
+const { user, isLoggedIn, userDisplayName, signOut } = useAuth()
 
 const showAuth = ref(false)
 const toast = useToast()
@@ -42,7 +42,7 @@ async function handleSignOut() {
           color="neutral"
           variant="ghost"
           icon="i-lucide-circle-user-round"
-          :label="user?.email?.split('@')[0]"
+          :label="userDisplayName"
           trailing-icon="i-lucide-chevron-down"
           size="sm"
         />

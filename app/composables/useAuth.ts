@@ -6,6 +6,18 @@ const user = ref<User | null>(null)
 export function useAuth() {
   const isLoggedIn = computed(() => !!user.value)
 
+  const userDisplayName = computed(() => {
+    if (!user.value) return ''
+    const name = (
+      user.value.user_metadata?.display_name ||
+      user.value.user_metadata?.name ||
+      user.value.user_metadata?.full_name ||
+      user.value.email?.split('@')[0] ||
+      'Usuário'
+    )
+    return name.trim().split(/\s+/)[0]
+  })
+
   // Only runs on the client — $supabase is a client-only plugin
   async function init() {
     if (!import.meta.client) return
@@ -26,13 +38,16 @@ export function useAuth() {
     if (error) throw error
   }
 
-  async function signUp(email: string, password: string) {
+  async function signUp(email: string, password: string, displayName?: string) {
     const { $supabase } = useNuxtApp()
     const { error } = await $supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/confirm`,
+        data: {
+          display_name: displayName,
+        },
       },
     })
     if (error) throw error
@@ -52,13 +67,26 @@ export function useAuth() {
     if (error) throw error
   }
 
+  async function signInWithGoogle() {
+    const { $supabase } = useNuxtApp()
+    const { error } = await $supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/confirm`,
+      },
+    })
+    if (error) throw error
+  }
+
   return {
     user,
     isLoggedIn,
+    userDisplayName,
     init,
     signIn,
     signUp,
     signOut,
     resetPassword,
+    signInWithGoogle,
   }
 }

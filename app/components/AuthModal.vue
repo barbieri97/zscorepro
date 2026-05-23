@@ -6,13 +6,15 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-const { signIn, signUp, resetPassword } = useAuth()
+const { signIn, signUp, resetPassword, signInWithGoogle } = useAuth()
 
 const tab = ref<Tab>('login')
 const email = ref('')
+const displayName = ref('')
 const password = ref('')
 const passwordConfirm = ref('')
 const loading = ref(false)
+const loadingGoogle = ref(false)
 const errorMsg = ref('')
 const successMsg = ref('')
 
@@ -24,11 +26,13 @@ watch(tab, () => resetForm())
 
 function resetForm() {
   email.value = ''
+  displayName.value = ''
   password.value = ''
   passwordConfirm.value = ''
   errorMsg.value = ''
   successMsg.value = ''
   loading.value = false
+  loadingGoogle.value = false
 }
 
 function close() {
@@ -55,7 +59,7 @@ async function handleLogin() {
 }
 
 async function handleRegister() {
-  if (!email.value || !password.value || !passwordConfirm.value) {
+  if (!email.value || !password.value || !passwordConfirm.value || !displayName.value) {
     errorMsg.value = 'Preencha todos os campos.'
     return
   }
@@ -70,10 +74,11 @@ async function handleRegister() {
   loading.value = true
   errorMsg.value = ''
   try {
-    await signUp(email.value, password.value)
+    await signUp(email.value, password.value, displayName.value)
     successMsg.value = 'Conta criada! Verifique seu email para confirmar o cadastro.'
     password.value = ''
     passwordConfirm.value = ''
+    displayName.value = ''
   }
   catch (e: any) {
     errorMsg.value = translateError(e.message)
@@ -99,6 +104,18 @@ async function handleForgot() {
   }
   finally {
     loading.value = false
+  }
+}
+
+async function handleGoogleLogin() {
+  loadingGoogle.value = true
+  errorMsg.value = ''
+  try {
+    await signInWithGoogle()
+  }
+  catch (e: any) {
+    errorMsg.value = translateError(e.message)
+    loadingGoogle.value = false
   }
 }
 
@@ -208,6 +225,16 @@ function translateError(msg: string): string {
 
         <!-- REGISTER FORM -->
         <form v-if="tab === 'register' && !successMsg" class="space-y-4" @submit.prevent="handleRegister">
+          <UFormField label="Nome de usuário">
+            <UInput
+              v-model="displayName"
+              type="text"
+              placeholder="Como quer ser chamado"
+              class="w-full"
+              :disabled="loading"
+            />
+          </UFormField>
+
           <UFormField label="Email">
             <UInput
               v-model="email"
@@ -249,6 +276,20 @@ function translateError(msg: string): string {
             Criar conta
           </UButton>
         </form>
+
+        <!-- Divider & Google Button -->
+        <div v-if="tab !== 'forgot' && !successMsg" class="space-y-4 pt-4 border-t border-muted">
+          <UButton
+            color="neutral"
+            variant="outline"
+            class="w-full justify-center"
+            icon="i-simple-icons-google"
+            :loading="loadingGoogle"
+            @click="handleGoogleLogin"
+          >
+            Entrar com Google
+          </UButton>
+        </div>
 
         <!-- FORGOT PASSWORD FORM -->
         <form v-if="tab === 'forgot' && !successMsg" class="space-y-4" @submit.prevent="handleForgot">
