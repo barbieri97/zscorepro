@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { items } = useNavigation()
-const { user, isLoggedIn, userDisplayName, signOut } = useAuth()
+const { user, isLoggedIn, userDisplayName, userFullName, userAvatarUrl, signOut } = useAuth()
 
 const showAuth = ref(false)
 const toast = useToast()
@@ -36,16 +36,23 @@ async function handleSignOut() {
       <!-- Auth: logged in -->
       <UDropdownMenu
         v-if="isLoggedIn"
-        :items="[[{ label: 'Sair', icon: 'i-lucide-log-out', onSelect: handleSignOut }]]"
+        :items="[
+          [{ label: userFullName, disabled: true, icon: 'i-lucide-user' }],
+          [{ label: 'Sair', icon: 'i-lucide-log-out', onSelect: handleSignOut }]
+        ]"
       >
         <UButton
           color="neutral"
           variant="ghost"
-          icon="i-lucide-circle-user-round"
-          :label="userDisplayName"
-          trailing-icon="i-lucide-chevron-down"
-          size="sm"
-        />
+          class="rounded-full p-1"
+        >
+          <UAvatar
+            :src="userAvatarUrl || undefined"
+            :alt="userDisplayName"
+            size="sm"
+            icon="i-lucide-circle-user-round"
+          />
+        </UButton>
       </UDropdownMenu>
 
       <!-- Auth: not logged in -->

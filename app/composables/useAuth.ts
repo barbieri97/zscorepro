@@ -18,6 +18,26 @@ export function useAuth() {
     return name.trim().split(/\s+/)[0]
   })
 
+  const userFullName = computed(() => {
+    if (!user.value) return ''
+    return (
+      user.value.user_metadata?.display_name ||
+      user.value.user_metadata?.name ||
+      user.value.user_metadata?.full_name ||
+      user.value.email ||
+      'Usuário'
+    )
+  })
+
+  const userAvatarUrl = computed(() => {
+    if (!user.value) return null
+    return (
+      user.value.user_metadata?.avatar_url ||
+      user.value.user_metadata?.picture ||
+      null
+    )
+  })
+
   // Only runs on the client — $supabase is a client-only plugin
   async function init() {
     if (!import.meta.client) return
@@ -47,6 +67,7 @@ export function useAuth() {
         emailRedirectTo: `${window.location.origin}/confirm`,
         data: {
           display_name: displayName,
+          full_name: displayName,
         },
       },
     })
@@ -82,6 +103,8 @@ export function useAuth() {
     user,
     isLoggedIn,
     userDisplayName,
+    userFullName,
+    userAvatarUrl,
     init,
     signIn,
     signUp,
