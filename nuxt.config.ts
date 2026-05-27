@@ -20,6 +20,11 @@ export default defineNuxtConfig({
   supabase: {
     redirect: false,
     types: '~/types/database.types',
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY
+      || process.env.SUPABASE_PUBLISHABLE_KEY
+      || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   },
 
   gtag: {
