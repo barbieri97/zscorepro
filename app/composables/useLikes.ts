@@ -20,7 +20,7 @@ export const useLikes = () => {
       .from('post_likes')
       .select('id')
       .eq('post_id', postId)
-      .eq('user_id', user.value.id)
+      .eq('user_id', user.value.sub as string)
       .maybeSingle()
     return !!data
   }
@@ -28,9 +28,9 @@ export const useLikes = () => {
   const togglePostLike = async (postId: string, currentlyLiked: boolean) => {
     if (!user.value) return { error: new Error('Login necessário para curtir') }
     if (currentlyLiked) {
-      return supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', user.value.id)
+      return supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', user.value.sub as string)
     }
-    return supabase.from('post_likes').insert({ post_id: postId, user_id: user.value.id })
+    return supabase.from('post_likes').insert({ post_id: postId, user_id: user.value.sub as string })
   }
 
   // ---- Comment Likes ----
@@ -49,7 +49,7 @@ export const useLikes = () => {
       .from('comment_likes')
       .select('id')
       .eq('comment_id', commentId)
-      .eq('user_id', user.value.id)
+      .eq('user_id', user.value.sub as string)
       .maybeSingle()
     return !!data
   }
@@ -57,9 +57,9 @@ export const useLikes = () => {
   const toggleCommentLike = async (commentId: string, currentlyLiked: boolean) => {
     if (!user.value) return { error: new Error('Login necessário para curtir') }
     if (currentlyLiked) {
-      return supabase.from('comment_likes').delete().eq('comment_id', commentId).eq('user_id', user.value.id)
+      return supabase.from('comment_likes').delete().eq('comment_id', commentId).eq('user_id', user.value.sub as string)
     }
-    return supabase.from('comment_likes').insert({ comment_id: commentId, user_id: user.value.id })
+    return supabase.from('comment_likes').insert({ comment_id: commentId, user_id: user.value.sub as string })
   }
 
   return {
