@@ -70,7 +70,7 @@ const submitReply = async () => {
   const { createComment } = useComments()
   const { error } = await createComment({
     post_id: props.postId,
-    user_id: user.value.id,
+    user_id: user.value.sub as string,
     parent_comment_id: props.comment.id,
     content: replyContent.value,
   })

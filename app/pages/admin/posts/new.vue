@@ -51,7 +51,7 @@ const save = async (publish = false) => {
 
   saving.value = true
   const { data, error } = await createPost({
-    author_id: user.value.id,
+    author_id: user.value.sub as string,
     title: form.title,
     slug: form.slug,
     excerpt: form.excerpt || null,

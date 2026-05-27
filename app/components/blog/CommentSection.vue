@@ -26,7 +26,7 @@ const submit = async () => {
   submitting.value = true
   const { error } = await createComment({
     post_id: props.postId,
-    user_id: user.value.id,
+    user_id: user.value.sub as string,
     content: newComment.value,
   })
   if (error) {
