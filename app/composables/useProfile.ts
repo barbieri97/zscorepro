@@ -10,12 +10,13 @@ export const useProfile = () => {
 
   const fetchProfile = async () => {
     if (!user.value) return
-    if (profile.value?.id === user.value.id) return
+    const userId = user.value.sub as string
+    if (profile.value?.id === userId) return
     loading.value = true
     const { data } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', user.value.id)
+      .eq('id', userId)
       .single()
     profile.value = data as Profile | null
     loading.value = false
@@ -40,7 +41,7 @@ export const useProfile = () => {
   const isAdmin = computed<boolean>(() => profile.value?.role === 'admin')
 
   watch(
-    () => user.value?.id,
+    () => user.value?.sub,
     async (id) => {
       if (!id) {
         profile.value = null

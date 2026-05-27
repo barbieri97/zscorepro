@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware(async () => {
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
-    .eq('id', user.value.id)
+    .eq('id', user.value.sub as string)
     .single()
 
   if (!profile || !['author', 'admin'].includes(profile.role)) {
