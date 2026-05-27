@@ -21,6 +21,11 @@ const userMenuItems = computed(() => [
   ],
   [
     {
+      label: "Meu Perfil",
+      icon: "i-heroicons-user-circle",
+      to: "/perfil",
+    },
+    {
       label: "Admin",
       icon: "i-heroicons-cog-6-tooth",
       to: "/admin",

@@ -19,6 +19,11 @@ export const useNavigation = () => {
       to: "/blog",
       icon: "i-heroicons-document-text"
     },
+    {
+      label: "Equipe",
+      to: "/equipe",
+      icon: "i-heroicons-user-group",
+    },
     ...(isAuthorOrAdmin.value ? [{
       label: "Admin",
       to: "/admin",

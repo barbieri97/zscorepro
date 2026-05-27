@@ -1,6 +1,6 @@
 import type { Database } from '~/types/database.types'
 
-export type StorageBucket = 'post-covers' | 'post-images'
+export type StorageBucket = 'post-covers' | 'post-images' | 'avatars'
 
 export const useImageUpload = () => {
   const supabase = useSupabaseClient<Database>()
