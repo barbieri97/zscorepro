@@ -17,22 +17,22 @@ const allTags = computed(() => {
   if (!posts.value) return []
   const tags = new Set<string>()
   posts.value.forEach((p) => p.tags?.forEach((t) => tags.add(t)))
-  return Array.from(tags)
+  return Array.from(tags).sort()
 })
 
-const tabItems = computed(() => [
-  { label: 'Todos', key: 'all' },
-  ...allTags.value.map((t) => ({ label: t, key: t })),
-])
-
-const selectedTab = ref(0)
+const selectedTags = ref<string[]>([])
 
 const filteredPosts = computed(() => {
   if (!posts.value) return []
-  const selected = tabItems.value[selectedTab.value]
-  if (!selected || selected.key === 'all') return posts.value
-  return posts.value.filter((p) => p.tags?.includes(selected.label))
+  if (!selectedTags.value.length) return posts.value
+  return posts.value.filter((p) =>
+    selectedTags.value.some((tag) => p.tags?.includes(tag))
+  )
 })
+
+const removeTag = (tag: string) => {
+  selectedTags.value = selectedTags.value.filter((t) => t !== tag)
+}
 </script>
 
 <template>
@@ -44,8 +44,39 @@ const filteredPosts = computed(() => {
       </p>
     </div>
 
-    <div v-if="allTags.length" class="w-full max-w-5xl flex justify-center">
-      <UTabs :items="tabItems" v-model="selectedTab" class="w-full max-w-2xl" />
+    <div v-if="allTags.length" class="w-full max-w-5xl space-y-3">
+      <div class="flex items-center gap-3">
+        <USelectMenu
+          v-model="selectedTags"
+          :items="allTags"
+          multiple
+          searchable
+          placeholder="Filtrar por tags..."
+          class="w-72"
+        />
+        <UButton
+          v-if="selectedTags.length"
+          variant="ghost"
+          size="sm"
+          icon="i-heroicons-x-mark"
+          @click="selectedTags = []"
+        >
+          Limpar
+        </UButton>
+      </div>
+
+      <div v-if="selectedTags.length" class="flex flex-wrap gap-2">
+        <UBadge
+          v-for="tag in selectedTags"
+          :key="tag"
+          variant="soft"
+          class="cursor-pointer"
+          @click="removeTag(tag)"
+        >
+          {{ tag }}
+          <UIcon name="i-heroicons-x-mark" class="ml-1 size-3" />
+        </UBadge>
+      </div>
     </div>
 
     <!-- Loading -->
@@ -56,7 +87,7 @@ const filteredPosts = computed(() => {
     <!-- Empty -->
     <div v-else-if="!filteredPosts.length" class="text-center py-16 space-y-3">
       <UIcon name="i-heroicons-document-magnifying-glass" class="text-5xl text-muted" />
-      <p class="text-muted">Nenhum post encontrado.</p>
+      <p class="text-muted">Nenhum post encontrado para as tags selecionadas.</p>
     </div>
 
     <!-- Grid -->
