@@ -1,14 +1,42 @@
 <script setup lang="ts">
-const { items } = useNavigation()
-const { user, isLoggedIn, userDisplayName, userFullName, userAvatarUrl, signOut } = useAuth()
+const { items } = useNavigation();
+const user = useSupabaseUser();
+const { profile } = useProfile();
+const supabase = useSupabaseClient();
+const toast = useToast();
+const router = useRouter();
 
-const showAuth = ref(false)
-const toast = useToast()
+const logout = async () => {
+  await supabase.auth.signOut();
+  toast.add({ title: "Sessão encerrada", color: "success" });
+  router.push("/");
+};
 
-async function handleSignOut() {
-  await signOut()
-  toast.add({ title: 'Até logo!', description: 'Você saiu da sua conta.', color: 'success' })
-}
+const userMenuItems = computed(() => [
+  [
+    {
+      label: profile.value?.username ?? user.value?.email ?? "Minha conta",
+      type: "label" as const,
+    },
+  ],
+  [
+    {
+      label: "Admin",
+      icon: "i-heroicons-cog-6-tooth",
+      to: "/admin",
+      disabled:
+        !profile.value || !["author", "admin"].includes(profile.value.role),
+    },
+  ],
+  [
+    {
+      label: "Sair",
+      icon: "i-heroicons-arrow-right-on-rectangle",
+      color: "error" as const,
+      onSelect: logout,
+    },
+  ],
+]);
 </script>
 
 <template>
@@ -33,44 +61,31 @@ async function handleSignOut() {
         />
       </UTooltip>
 
-      <!-- Auth: logged in -->
-      <UDropdownMenu
-        v-if="isLoggedIn"
-        :items="[
-          [{ label: userFullName, disabled: true, icon: 'i-lucide-user' }],
-          [{ label: 'Sair', icon: 'i-lucide-log-out', onSelect: handleSignOut }]
-        ]"
-      >
-        <UButton
-          color="neutral"
-          variant="ghost"
-          class="rounded-full p-1"
-        >
-          <UAvatar
-            :src="userAvatarUrl || undefined"
-            :alt="userDisplayName"
-            size="sm"
-            icon="i-lucide-circle-user-round"
-          />
-        </UButton>
-      </UDropdownMenu>
+      <template v-if="user">
+        <UDropdownMenu :items="userMenuItems">
+          <UButton variant="ghost" color="neutral" aria-label="Menu do usuário">
+            <UAvatar
+              :src="profile?.avatar_url ?? undefined"
+              :alt="profile?.username ?? 'Usuário'"
+              size="xs"
+            />
+          </UButton>
+        </UDropdownMenu>
+      </template>
 
-      <!-- Auth: not logged in -->
       <UButton
         v-else
+        to="/auth/login"
+        variant="ghost"
         size="sm"
-        variant="outline"
-        icon="i-lucide-log-in"
-        label="Entrar"
-        @click="showAuth = true"
-      />
+        icon="i-heroicons-user"
+      >
+        Entrar
+      </UButton>
     </template>
 
     <template #body>
       <UNavigationMenu :items="items" orientation="vertical" class="-mx-2.5" />
     </template>
   </UHeader>
-
-  <AuthModal v-model:open="showAuth" />
 </template>
-

@@ -6,17 +6,24 @@ export interface NavItem extends NavigationMenuItem {
 }
 
 export const useNavigation = () => {
+  const { isAuthorOrAdmin } = useProfile()
+
   const items = computed<NavItem[]>(() => [
     {
       label: "Home",
       to: "/",
-      icon: "i-heroicons-document-text",
+      icon: "i-heroicons-home",
     },
     {
       label: "Blog",
       to: "/blog",
       icon: "i-heroicons-document-text"
     },
+    ...(isAuthorOrAdmin.value ? [{
+      label: "Admin",
+      to: "/admin",
+      icon: "i-heroicons-cog-6-tooth",
+    }] : []),
     {
       label: "Calculadoras",
       to: "/calculadoras",
