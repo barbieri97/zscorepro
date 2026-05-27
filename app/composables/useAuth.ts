@@ -1,9 +1,10 @@
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import type { User } from '@supabase/supabase-js'
 
-const user = ref<User | null>(null)
-
 export function useAuth() {
+  // useSupabaseUser() é reativo e gerenciado automaticamente pelo @nuxtjs/supabase
+  const user = useSupabaseUser()
+
   const isLoggedIn = computed(() => !!user.value)
 
   const userDisplayName = computed(() => {
@@ -38,29 +39,19 @@ export function useAuth() {
     )
   })
 
-  // Only runs on the client — $supabase is a client-only plugin
-  async function init() {
-    if (!import.meta.client) return
-
-    const { $supabase } = useNuxtApp()
-
-    const { data } = await $supabase.auth.getSession()
-    user.value = data.session?.user ?? null
-
-    $supabase.auth.onAuthStateChange((_event, session) => {
-      user.value = session?.user ?? null
-    })
-  }
+  // init() mantido por compatibilidade com quem já o chama,
+  // mas o estado é gerenciado pelo @nuxtjs/supabase automaticamente
+  async function init() {}
 
   async function signIn(email: string, password: string) {
-    const { $supabase } = useNuxtApp()
-    const { error } = await $supabase.auth.signInWithPassword({ email, password })
+    const supabase = useSupabaseClient()
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
   }
 
   async function signUp(email: string, password: string, displayName?: string) {
-    const { $supabase } = useNuxtApp()
-    const { error } = await $supabase.auth.signUp({
+    const supabase = useSupabaseClient()
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -75,22 +66,22 @@ export function useAuth() {
   }
 
   async function signOut() {
-    const { $supabase } = useNuxtApp()
-    const { error } = await $supabase.auth.signOut()
+    const supabase = useSupabaseClient()
+    const { error } = await supabase.auth.signOut()
     if (error) throw error
   }
 
   async function resetPassword(email: string) {
-    const { $supabase } = useNuxtApp()
-    const { error } = await $supabase.auth.resetPasswordForEmail(email, {
+    const supabase = useSupabaseClient()
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/confirm`,
     })
     if (error) throw error
   }
 
   async function signInWithGoogle() {
-    const { $supabase } = useNuxtApp()
-    const { error } = await $supabase.auth.signInWithOAuth({
+    const supabase = useSupabaseClient()
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/confirm`,
