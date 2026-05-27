@@ -13,8 +13,14 @@ export default defineNuxtConfig({
     "@nuxt/test-utils",
     "@nuxt/ui",
     "@nuxthub/core",
+    "@nuxtjs/supabase",
     "nuxt-gtag",
   ],
+
+  supabase: {
+    redirect: false,
+    types: '~/types/database.types',
+  },
 
   gtag: {
     id: "G-C6P9CVNT6V",
@@ -25,6 +31,7 @@ export default defineNuxtConfig({
     fallback: "dark",
   },
   runtimeConfig: {
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     public: {
       appVersion: process.env.npm_package_version || "1.0.0",
     },

@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import type { PostWithMeta } from '~/composables/usePosts'
 
-const { data: posts } = await useAsyncData('blog-posts', () => queryCollection('blog').all())
+useSeoMeta({
+  title: 'Blog · ZSCOREPRO',
+  description: 'Artigos educacionais sobre psicometria, estatística e teoria dos testes.',
+})
+
+const { getPublishedPosts } = usePosts()
+
+const { data: posts, pending } = await useAsyncData('blog-posts', async () => {
+  const { data } = await getPublishedPosts()
+  return (data ?? []) as PostWithMeta[]
+})
 
 const allTags = computed(() => {
   if (!posts.value) return []
   const tags = new Set<string>()
-  posts.value.forEach(post => {
-    if (post.meta?.tags && Array.isArray(post.meta.tags)) {
-      post.meta.tags.forEach(tag => tags.add(tag))
-    }
-  })
+  posts.value.forEach((p) => p.tags?.forEach((t) => tags.add(t)))
   return Array.from(tags)
 })
 
-const tabItems = computed(() => {
-  return [
-    { label: 'Todos', key: 'all' },
-    ...allTags.value.map(tag => ({ label: tag, key: tag }))
-  ]
-})
+const tabItems = computed(() => [
+  { label: 'Todos', key: 'all' },
+  ...allTags.value.map((t) => ({ label: t, key: t })),
+])
 
-const selectedTabIndex = ref(0)
+const selectedTab = ref(0)
 
 const filteredPosts = computed(() => {
   if (!posts.value) return []
-  const selected = tabItems.value[selectedTabIndex.value]
+  const selected = tabItems.value[selectedTab.value]
   if (!selected || selected.key === 'all') return posts.value
-
-  return posts.value.filter(post => {
-    return post.meta?.tags && Array.isArray(post.meta.tags) && post.meta.tags.includes(selected.label)
-  })
+  return posts.value.filter((p) => p.tags?.includes(selected.label))
 })
 </script>
 
 <template>
   <UContainer class="py-16 space-y-12 flex flex-col items-center">
-    <!-- Componente de Header -->
     <div class="text-center space-y-4 max-w-2xl">
       <h1 class="text-4xl font-bold text-primary">Blog ZSCOREPRO</h1>
       <p class="text-lg text-muted">
@@ -44,61 +44,24 @@ const filteredPosts = computed(() => {
       </p>
     </div>
 
-    <!-- Filtro de Tabs Dinâmicas -->
-    <div class="w-full max-w-5xl flex justify-center mb-4">
-      <UTabs :items="tabItems" v-model="selectedTabIndex" class="w-full max-w-2xl" />
+    <div v-if="allTags.length" class="w-full max-w-5xl flex justify-center">
+      <UTabs :items="tabItems" v-model="selectedTab" class="w-full max-w-2xl" />
     </div>
 
-    <!-- Grid de Artigos -->
-    <div class="grid gap-6 md:grid-cols-2 w-full max-w-5xl">
-      <UCard
-        v-for="post in filteredPosts"
-        :key="post.path"
-        class="flex flex-col h-full transition-shadow hover:shadow-lg overflow-hidden"
-        :ui="{ body: { padding: '' }, header: { padding: '' } }"
-        variant="soft"
-      >
-        <template #header>
-           <NuxtImg v-if="post.meta?.image" :src="post.meta.image" :alt="post.title" class="w-full h-48 object-cover" />
-        </template>
-        
-        <div class="p-6 flex flex-col flex-grow">
-          <div v-if="post.meta?.date" class="text-xs text-primary mb-2 font-mono">
-            {{ post.meta.date }}
-          </div>
-          <h2 class="text-xl font-bold mb-3">{{ post.title }}</h2>
-          <p class="text-muted text-sm flex-grow">
-            {{ post.description }}
-          </p>
+    <!-- Loading -->
+    <div v-if="pending" class="grid gap-6 md:grid-cols-2 w-full max-w-5xl">
+      <USkeleton v-for="i in 4" :key="i" class="h-80 rounded-2xl" />
+    </div>
 
-          <div v-if="post.meta?.tags" class="flex flex-wrap gap-2 mt-5">
-            <UBadge v-for="tag in post.meta.tags" :key="tag" variant="subtle" size="xs">{{ tag }}</UBadge>
-          </div>
-        </div>
-        
-        <template #footer>
-          <div class="flex items-center justify-between w-full">
-            <div v-if="post.meta?.authorName" class="flex items-center gap-2.5">
-              <UAvatar v-if="post.meta.authorImage" :src="post.meta.authorImage" :alt="post.meta.authorName" size="sm" class="ring-1 ring-gray-200 dark:ring-gray-800" />
-              <div class="text-left leading-tight">
-                <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ post.meta.authorName }}</p>
-                <p v-if="post.meta.authorInstagram" class="text-[10px] text-gray-500 dark:text-gray-400">@{{ post.meta.authorInstagram.split('/').pop() }}</p>
-              </div>
-            </div>
-            <div v-else></div>
-            <UButton
-              :to="post.path"
-              variant="ghost"
-              icon="i-heroicons-arrow-right"
-              trailing
-              color="gray"
-              size="sm"
-            >
-              Ler Artigo
-            </UButton>
-          </div>
-        </template>
-      </UCard>
+    <!-- Empty -->
+    <div v-else-if="!filteredPosts.length" class="text-center py-16 space-y-3">
+      <UIcon name="i-heroicons-document-magnifying-glass" class="text-5xl text-muted" />
+      <p class="text-muted">Nenhum post encontrado.</p>
+    </div>
+
+    <!-- Grid -->
+    <div v-else class="grid gap-6 md:grid-cols-2 w-full max-w-5xl">
+      <BlogPostCard v-for="post in filteredPosts" :key="post.id" :post="post" />
     </div>
   </UContainer>
 </template>
