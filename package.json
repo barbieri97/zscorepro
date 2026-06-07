@@ -57,5 +57,8 @@
     "@types/qrcode": "^1.5.6",
     "supabase": "^2.101.0"
   },
-  "version": "1.11.2"
+  "version": "1.11.2",
+  "engines": {
+    "node": ">=22"
+  }
 }

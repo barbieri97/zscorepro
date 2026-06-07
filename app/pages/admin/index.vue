@@ -51,7 +51,17 @@ const formattedDate = (d: string) =>
         <h1 class="text-2xl font-bold">Painel Administrativo</h1>
         <p class="text-muted text-sm mt-1">Olá, {{ profile?.username ?? user?.email }}</p>
       </div>
-      <UButton to="/admin/posts/new" icon="i-heroicons-plus">Novo Post</UButton>
+      <div class="flex items-center gap-2">
+        <UButton
+          v-if="profile?.role === 'admin'"
+          to="/admin/painel"
+          variant="outline"
+          icon="i-heroicons-shield-check"
+        >
+          Painel Master
+        </UButton>
+        <UButton to="/admin/posts/new" icon="i-heroicons-plus">Novo Post</UButton>
+      </div>
     </div>
 
     <!-- Stats -->

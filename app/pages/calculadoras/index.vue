@@ -13,7 +13,7 @@ const calculatorTools = computed(() => {
       <h1 class="text-4xl font-bold text-primary">ZSCOREPRO</h1>
       <h3 class="text-primary text-2xl font-semibold">Calculadoras</h3>
       <p class="text-lg text-muted">
-        Ferramentas online para psicometristas e pesquisadores.
+        Psicologia, neurociência e pesquisa em um só lugar.
       </p>
     </div>
 

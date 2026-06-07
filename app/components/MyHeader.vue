@@ -1,47 +1,49 @@
 <script setup lang="ts">
-const { items } = useNavigation();
-const user = useSupabaseUser();
-const { profile } = useProfile();
-const supabase = useSupabaseClient();
-const toast = useToast();
-const router = useRouter();
+const { items } = useNavigation()
+const user = useSupabaseUser()
+const { profile } = useProfile()
+const supabase = useSupabaseClient()
+const toast = useToast()
+const router = useRouter()
 
 const logout = async () => {
-  await supabase.auth.signOut();
-  toast.add({ title: "Sessão encerrada", color: "success" });
-  router.push("/");
-};
+  await supabase.auth.signOut()
+  toast.add({ title: 'Sessão encerrada', color: 'success' })
+  router.push('/')
+}
+
+const isAdminOrAuthor = computed(() =>
+  profile.value && ['author', 'admin'].includes(profile.value.role)
+)
 
 const userMenuItems = computed(() => [
   [
     {
-      label: profile.value?.username ?? user.value?.email ?? "Minha conta",
-      type: "label" as const,
-    },
+      label: profile.value?.username ?? user.value?.email ?? 'Minha conta',
+      type: 'label' as const,
+    }
   ],
   [
     {
-      label: "Meu Perfil",
-      icon: "i-heroicons-user-circle",
-      to: "/perfil",
+      label: 'Meu Perfil',
+      icon: 'i-heroicons-user-circle',
+      to: '/perfil',
     },
-    {
-      label: "Admin",
-      icon: "i-heroicons-cog-6-tooth",
-      to: "/admin",
-      disabled:
-        !profile.value || !["author", "admin"].includes(profile.value.role),
-    },
+    ...(isAdminOrAuthor.value ? [{
+      label: 'Admin',
+      icon: 'i-heroicons-cog-6-tooth',
+      to: '/admin',
+    }] : [])
   ],
   [
     {
-      label: "Sair",
-      icon: "i-heroicons-arrow-right-on-rectangle",
-      color: "error" as const,
+      label: 'Sair',
+      icon: 'i-heroicons-arrow-right-on-rectangle',
+      color: 'error' as const,
       onSelect: logout,
-    },
-  ],
-]);
+    }
+  ]
+])
 </script>
 
 <template>
@@ -78,13 +80,7 @@ const userMenuItems = computed(() => [
         </UDropdownMenu>
       </template>
 
-      <UButton
-        v-else
-        to="/auth/login"
-        variant="ghost"
-        size="sm"
-        icon="i-heroicons-user"
-      >
+      <UButton v-else to="/auth/login" variant="ghost" size="sm" icon="i-heroicons-user">
         Entrar
       </UButton>
     </template>

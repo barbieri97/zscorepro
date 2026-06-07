@@ -8,7 +8,7 @@ const { groupedTools } = useNavigation();
     <div class="text-center space-y-4 max-w-2xl">
       <h1 class="text-4xl font-bold text-primary">ZSCOREPRO</h1>
       <p class="text-lg text-muted">
-        Ferramentas online para psicometristas e pesquisadores.
+        Psicologia, neurociência e pesquisa em um só lugar.
       </p>
     </div>
 
