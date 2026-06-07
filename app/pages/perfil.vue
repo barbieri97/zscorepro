@@ -11,6 +11,10 @@ const form = reactive({
   username: '',
   bio: '',
   avatar_url: '',
+  instagram: '',
+  linkedin: '',
+  twitter: '',
+  github: '',
 })
 
 const saving = ref(false)
@@ -21,6 +25,10 @@ watch(profile, (p) => {
     form.username = p.username ?? ''
     form.bio = p.bio ?? ''
     form.avatar_url = p.avatar_url ?? ''
+    form.instagram = p.instagram ?? ''
+    form.linkedin = p.linkedin ?? ''
+    form.twitter = p.twitter ?? ''
+    form.github = p.github ?? ''
   }
 }, { immediate: true })
 
@@ -42,6 +50,10 @@ const save = async () => {
     username: form.username.trim() || null,
     bio: form.bio.trim() || null,
     avatar_url: form.avatar_url || null,
+    instagram: form.instagram.trim() || null,
+    linkedin: form.linkedin.trim() || null,
+    twitter: form.twitter.trim() || null,
+    github: form.github.trim() || null,
   })
   saving.value = false
 
@@ -105,6 +117,45 @@ const save = async () => {
               :rows="4"
               class="w-full"
             />
+          </div>
+        </div>
+
+        <USeparator />
+
+        <!-- Redes sociais -->
+        <div class="space-y-4">
+          <p class="text-sm font-semibold">Redes sociais</p>
+
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium flex items-center gap-1.5">
+              <UIcon name="i-simple-icons-instagram" class="text-pink-500" />
+              Instagram
+            </label>
+            <UInput v-model="form.instagram" placeholder="@seu_usuario" class="w-full" />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium flex items-center gap-1.5">
+              <UIcon name="i-simple-icons-linkedin" class="text-blue-600" />
+              LinkedIn
+            </label>
+            <UInput v-model="form.linkedin" placeholder="https://linkedin.com/in/seu-perfil" class="w-full" />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium flex items-center gap-1.5">
+              <UIcon name="i-simple-icons-x" />
+              X / Twitter
+            </label>
+            <UInput v-model="form.twitter" placeholder="@seu_usuario" class="w-full" />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium flex items-center gap-1.5">
+              <UIcon name="i-simple-icons-github" />
+              GitHub
+            </label>
+            <UInput v-model="form.github" placeholder="https://github.com/seu-usuario" class="w-full" />
           </div>
         </div>
 

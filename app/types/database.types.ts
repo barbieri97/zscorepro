@@ -12,6 +12,10 @@ export interface Database {
           avatar_url: string | null
           role: UserRole
           bio: string | null
+          instagram: string | null
+          linkedin: string | null
+          twitter: string | null
+          github: string | null
           created_at: string
         }
         Insert: {
@@ -20,6 +24,10 @@ export interface Database {
           avatar_url?: string | null
           role?: UserRole
           bio?: string | null
+          instagram?: string | null
+          linkedin?: string | null
+          twitter?: string | null
+          github?: string | null
           created_at?: string
         }
         Update: {
@@ -28,6 +36,10 @@ export interface Database {
           avatar_url?: string | null
           role?: UserRole
           bio?: string | null
+          instagram?: string | null
+          linkedin?: string | null
+          twitter?: string | null
+          github?: string | null
           created_at?: string
         }
       }

@@ -3,7 +3,14 @@ import type { Database } from '~/types/database.types'
 export type Post = Database['public']['Tables']['posts']['Row']
 
 export type PostWithMeta = Post & {
-  profiles?: { username: string | null; avatar_url: string | null } | null
+  profiles?: {
+    username: string | null
+    avatar_url: string | null
+    instagram: string | null
+    linkedin: string | null
+    twitter: string | null
+    github: string | null
+  } | null
   post_likes?: [{ count: number }]
   comments?: [{ count: number }]
 }
@@ -23,10 +30,12 @@ export const calcReadingTime = (wordCount: number): number =>
 export const usePosts = () => {
   const supabase = useSupabaseClient<Database>()
 
+  const profileFields = 'username, avatar_url, instagram, linkedin, twitter, github'
+
   const getPublishedPosts = async () => {
     return supabase
       .from('posts')
-      .select('*, profiles(username, avatar_url), post_likes(count), comments(count)')
+      .select(`*, profiles(${profileFields}), post_likes(count), comments(count)`)
       .eq('published', true)
       .order('published_at', { ascending: false })
   }
@@ -34,7 +43,7 @@ export const usePosts = () => {
   const getPostBySlug = async (slug: string) => {
     return supabase
       .from('posts')
-      .select('*, profiles(username, avatar_url), post_likes(count), comments(count)')
+      .select(`*, profiles(${profileFields}), post_likes(count), comments(count)`)
       .eq('slug', slug)
       .eq('published', true)
       .single()
@@ -50,7 +59,7 @@ export const usePosts = () => {
   const getAllPostsWithAuthors = async () => {
     return supabase
       .from('posts')
-      .select('*, profiles(username, avatar_url), post_likes(count), comments(count)')
+      .select(`*, profiles(${profileFields}), post_likes(count), comments(count)`)
       .order('created_at', { ascending: false })
   }
 

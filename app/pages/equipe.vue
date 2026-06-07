@@ -8,7 +8,7 @@ const supabase = useSupabaseClient<Database>()
 const { data: members, pending } = await useAsyncData('equipe', async () => {
   const { data } = await supabase
     .from('profiles')
-    .select('id, username, avatar_url, bio, role')
+    .select('id, username, avatar_url, bio, role, instagram, linkedin, twitter, github')
     .in('role', ['admin', 'author'])
     .order('role', { ascending: true })
     .order('username', { ascending: true })
@@ -21,6 +21,42 @@ const authors = computed(() => members.value?.filter(m => m.role === 'author') ?
 const roleLabel: Record<string, string> = {
   admin: 'Administrador',
   author: 'Autor',
+}
+
+type SocialKey = 'instagram' | 'linkedin' | 'twitter' | 'github'
+
+const socialConfig: Record<SocialKey, { icon: string; color: string; toUrl: (v: string) => string }> = {
+  instagram: {
+    icon: 'i-simple-icons-instagram',
+    color: 'text-pink-500',
+    toUrl: (v) => v.startsWith('http') ? v : `https://instagram.com/${v.replace(/^@/, '')}`,
+  },
+  linkedin: {
+    icon: 'i-simple-icons-linkedin',
+    color: 'text-blue-600',
+    toUrl: (v) => v.startsWith('http') ? v : `https://linkedin.com/in/${v}`,
+  },
+  twitter: {
+    icon: 'i-simple-icons-x',
+    color: '',
+    toUrl: (v) => v.startsWith('http') ? v : `https://x.com/${v.replace(/^@/, '')}`,
+  },
+  github: {
+    icon: 'i-simple-icons-github',
+    color: '',
+    toUrl: (v) => v.startsWith('http') ? v : `https://github.com/${v}`,
+  },
+}
+
+function socialLinks(member: Record<string, unknown>) {
+  return (Object.keys(socialConfig) as SocialKey[])
+    .filter(key => !!member[key])
+    .map(key => ({
+      key,
+      url: socialConfig[key].toUrl(member[key] as string),
+      icon: socialConfig[key].icon,
+      color: socialConfig[key].color,
+    }))
 }
 </script>
 
@@ -59,6 +95,18 @@ const roleLabel: Record<string, string> = {
                 <p class="text-sm text-muted line-clamp-3">
                   {{ member.bio ?? 'Sem bio.' }}
                 </p>
+                <div v-if="socialLinks(member as Record<string, unknown>).length" class="flex gap-3 pt-1">
+                  <a
+                    v-for="link in socialLinks(member as Record<string, unknown>)"
+                    :key="link.key"
+                    :href="link.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hover:opacity-70 transition-opacity"
+                  >
+                    <UIcon :name="link.icon" :class="['text-lg', link.color]" />
+                  </a>
+                </div>
               </div>
             </div>
           </UCard>
@@ -86,6 +134,18 @@ const roleLabel: Record<string, string> = {
                 <p class="text-sm text-muted line-clamp-3">
                   {{ member.bio ?? 'Sem bio.' }}
                 </p>
+                <div v-if="socialLinks(member as Record<string, unknown>).length" class="flex gap-3 pt-1">
+                  <a
+                    v-for="link in socialLinks(member as Record<string, unknown>)"
+                    :key="link.key"
+                    :href="link.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hover:opacity-70 transition-opacity"
+                  >
+                    <UIcon :name="link.icon" :class="['text-lg', link.color]" />
+                  </a>
+                </div>
               </div>
             </div>
           </UCard>

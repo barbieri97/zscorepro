@@ -54,9 +54,47 @@ const formattedDate = computed(() => {
           <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight">{{ post.title }}</h1>
 
           <div class="flex items-center flex-wrap gap-4">
-            <div v-if="post.profiles" class="flex items-center gap-2">
+            <div v-if="post.profiles" class="flex items-center gap-3">
               <UAvatar :src="post.profiles.avatar_url ?? undefined" :alt="post.profiles.username ?? 'Autor'" size="sm" />
               <span class="text-sm font-medium">{{ post.profiles.username }}</span>
+              <div class="flex gap-2">
+                <a
+                  v-if="post.profiles.instagram"
+                  :href="post.profiles.instagram.startsWith('http') ? post.profiles.instagram : `https://instagram.com/${post.profiles.instagram.replace(/^@/, '')}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:opacity-70 transition-opacity"
+                >
+                  <UIcon name="i-simple-icons-instagram" class="text-pink-500" />
+                </a>
+                <a
+                  v-if="post.profiles.linkedin"
+                  :href="post.profiles.linkedin.startsWith('http') ? post.profiles.linkedin : `https://linkedin.com/in/${post.profiles.linkedin}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:opacity-70 transition-opacity"
+                >
+                  <UIcon name="i-simple-icons-linkedin" class="text-blue-600" />
+                </a>
+                <a
+                  v-if="post.profiles.twitter"
+                  :href="post.profiles.twitter.startsWith('http') ? post.profiles.twitter : `https://x.com/${post.profiles.twitter.replace(/^@/, '')}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:opacity-70 transition-opacity"
+                >
+                  <UIcon name="i-simple-icons-x" />
+                </a>
+                <a
+                  v-if="post.profiles.github"
+                  :href="post.profiles.github.startsWith('http') ? post.profiles.github : `https://github.com/${post.profiles.github}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:opacity-70 transition-opacity"
+                >
+                  <UIcon name="i-simple-icons-github" />
+                </a>
+              </div>
             </div>
             <span class="text-sm text-muted">{{ formattedDate }}</span>
             <span v-if="post.reading_time_minutes" class="text-sm text-muted">
