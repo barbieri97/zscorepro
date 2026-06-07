@@ -1,2 +1,19 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+/*
+ * Soften the default extremes: dark mode goes from near-black (slate-950)
+ * to a deep navy (slate-900), and cards step up to slate-800.
+ * Light mode gets a subtle off-white instead of pure white.
+ */
+:root {
+  --ui-bg: var(--color-slate-50);
+}
+
+.dark {
+  --ui-bg:          var(--color-slate-900);
+  --ui-bg-elevated: var(--color-slate-800);
+  --ui-bg-muted:    color-mix(in srgb, var(--color-slate-800) 60%, var(--color-slate-900));
+  --ui-border:      var(--color-slate-700);
+  --ui-border-muted: var(--color-slate-700);
+}

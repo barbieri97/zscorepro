@@ -15,7 +15,7 @@ const { groupedTools } = useNavigation();
     <!-- Grupos de Ferramentas -->
     <div class="w-full max-w-6xl space-y-16">
       <section v-for="group in groupedTools" :key="group.label" class="space-y-6">
-        <div class="flex items-center space-x-3 border-b border-gray-200 dark:border-gray-800 pb-2">
+        <div class="flex items-center space-x-3 border-b border-(--ui-border) pb-2">
           <UIcon v-if="group.icon" :name="group.icon" class="text-primary text-2xl" />
           <h2 class="text-2xl font-semibold">{{ group.label }}</h2>
         </div>

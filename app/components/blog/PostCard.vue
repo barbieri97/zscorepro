@@ -20,7 +20,7 @@ const formattedDate = computed(() => {
   >
     <template #header>
       <NuxtLink :to="`/blog/${post.slug}`">
-        <div class="w-full h-48 overflow-hidden bg-gray-100 dark:bg-gray-800">
+        <div class="w-full h-48 overflow-hidden bg-(--ui-bg-elevated)">
           <img
             v-if="post.cover_image"
             :src="post.cover_image"

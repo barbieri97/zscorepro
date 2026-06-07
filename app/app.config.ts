@@ -7,7 +7,7 @@ export default defineAppConfig({
       warning: "yellow",
       error: "red",
       info: "orange",
-      neutral: "stone",
+      neutral: "slate",
     },
   },
 });
