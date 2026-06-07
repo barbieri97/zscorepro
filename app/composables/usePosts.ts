@@ -47,6 +47,20 @@ export const usePosts = () => {
       .order('created_at', { ascending: false })
   }
 
+  const getAllPostsWithAuthors = async () => {
+    return supabase
+      .from('posts')
+      .select('*, profiles(username, avatar_url), post_likes(count), comments(count)')
+      .order('created_at', { ascending: false })
+  }
+
+  const togglePostPublished = async (id: string, published: boolean) => {
+    return supabase
+      .from('posts')
+      .update({ published, published_at: published ? new Date().toISOString() : null })
+      .eq('id', id)
+  }
+
   const getPostById = async (id: string) => {
     return supabase.from('posts').select('*').eq('id', id).single()
   }
@@ -67,9 +81,11 @@ export const usePosts = () => {
     getPublishedPosts,
     getPostBySlug,
     getAdminPosts,
+    getAllPostsWithAuthors,
     getPostById,
     createPost,
     updatePost,
+    togglePostPublished,
     deletePost,
   }
 }

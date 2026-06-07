@@ -12,6 +12,10 @@ const logout = async () => {
   router.push('/')
 }
 
+const isAdminOrAuthor = computed(() =>
+  profile.value && ['author', 'admin'].includes(profile.value.role)
+)
+
 const userMenuItems = computed(() => [
   [
     {
@@ -25,12 +29,11 @@ const userMenuItems = computed(() => [
       icon: 'i-heroicons-user-circle',
       to: '/perfil',
     },
-    {
+    ...(isAdminOrAuthor.value ? [{
       label: 'Admin',
       icon: 'i-heroicons-cog-6-tooth',
       to: '/admin',
-      disabled: !profile.value || !['author', 'admin'].includes(profile.value.role),
-    }
+    }] : [])
   ],
   [
     {
