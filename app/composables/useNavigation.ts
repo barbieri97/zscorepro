@@ -35,20 +35,6 @@ export const useNavigation = () => {
       icon: "i-heroicons-calculator",
       children: [
         {
-          label: "Financeiro",
-          to: "/calculadoras/financeiro",
-          description: "Calculadoras para a área financeira, como juros e investimentos.",
-          icon: "i-heroicons-banknotes",
-          children: [
-            {
-              label: "Conta Compartilhada",
-              to: "/calculadoras/financeiro/conta-compartilhada",
-              description: "Calculadora de divisão de gastos que permite informar quanto cada pessoa pagou e mostra automaticamente quem deve pagar ou receber para que a conta fique dividida de forma justa.",
-              icon: "i-heroicons-percent-badge",
-            }
-          ]
-        },
-        {
           label: "Z-Score",
           to: "/calculadoras/zscore",
           description: "Converta escores para Z, T, percentil ou ponto ponderado.",
