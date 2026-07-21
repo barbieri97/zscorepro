@@ -40,6 +40,15 @@ export const usePosts = () => {
       .order('published_at', { ascending: false })
   }
 
+  const getPublishedPostsByAuthor = async (authorId: string) => {
+    return supabase
+      .from('posts')
+      .select(`*, profiles(${profileFields}), post_likes(count), comments(count)`)
+      .eq('published', true)
+      .eq('author_id', authorId)
+      .order('published_at', { ascending: false })
+  }
+
   const getPostBySlug = async (slug: string) => {
     return supabase
       .from('posts')
@@ -88,6 +97,7 @@ export const usePosts = () => {
 
   return {
     getPublishedPosts,
+    getPublishedPostsByAuthor,
     getPostBySlug,
     getAdminPosts,
     getAllPostsWithAuthors,
