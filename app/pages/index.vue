@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import type { PostWithMeta } from '~/composables/usePosts'
+
 const { groupedTools } = useNavigation();
+const { getPublishedPosts } = usePosts();
+
+const { data: latestPosts, pending: postsPending } = await useAsyncData('home-latest-posts', async () => {
+  const { data } = await getPublishedPosts();
+  return ((data ?? []) as PostWithMeta[]).slice(0, 4);
+});
 </script>
 
 <template>
@@ -14,6 +22,34 @@ const { groupedTools } = useNavigation();
 
     <!-- Grupos de Ferramentas -->
     <div class="w-full max-w-6xl space-y-16">
+      <!-- Blog -->
+      <section v-if="postsPending || latestPosts?.length" class="space-y-6">
+        <div class="flex items-center justify-between border-b border-(--ui-border) pb-2">
+          <div class="flex items-center space-x-3">
+            <UIcon name="i-heroicons-document-text" class="text-primary text-2xl" />
+            <h2 class="text-2xl font-semibold">Blog</h2>
+          </div>
+          <UButton
+            to="/blog"
+            variant="link"
+            trailing
+            icon="i-heroicons-arrow-right"
+          >
+            Ver todos os posts
+          </UButton>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="postsPending" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <USkeleton v-for="i in 4" :key="i" class="h-80 rounded-2xl" />
+        </div>
+
+        <!-- Grade de posts -->
+        <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <BlogPostCard v-for="post in latestPosts" :key="post.id" :post="post" />
+        </div>
+      </section>
+
       <section v-for="group in groupedTools" :key="group.label" class="space-y-6">
         <div class="flex items-center space-x-3 border-b border-(--ui-border) pb-2">
           <UIcon v-if="group.icon" :name="group.icon" class="text-primary text-2xl" />
