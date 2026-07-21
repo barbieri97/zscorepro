@@ -12,9 +12,9 @@ const { data: member } = await useAsyncData(`equipe-${username.value}`, async ()
   const { data } = await supabase
     .from('profiles')
     .select('id, username, avatar_url, bio, role, instagram, linkedin, twitter, github, created_at')
-    .eq('username', username.value)
+    .ilike('username', username.value)
     .in('role', ['admin', 'author'])
-    .single()
+    .maybeSingle()
   return data
 })
 
