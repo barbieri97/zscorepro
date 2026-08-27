@@ -26,3 +26,6 @@ logs
 # Supabase local
 supabase/.temp
 supabase/.branches
+
+files
+prompt.md
