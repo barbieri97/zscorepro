@@ -7,8 +7,12 @@ const { store } = defineProps<{ store: BrodmannStore }>()
 <template>
   <div class="mt-6 min-h-5">
     <template v-if="store.legendData.value.mode === 'preset' || store.legendData.value.mode === 'custom'">
-      <h2 class="font-serif text-lg">{{ store.legendData.value.title }}</h2>
-      <p class="mb-3 max-w-[78ch] text-sm text-muted">{{ store.legendData.value.note }}</p>
+      <h2 v-if="store.legendData.value.title" class="font-serif text-lg">
+        {{ store.legendData.value.title }}
+      </h2>
+      <p v-if="store.legendData.value.note" class="mb-3 max-w-[78ch] text-sm text-muted">
+        {{ store.legendData.value.note }}
+      </p>
       <div class="flex flex-wrap gap-2">
         <span
           v-for="chip in store.legendData.value.chips"

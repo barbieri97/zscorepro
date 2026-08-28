@@ -269,6 +269,9 @@ export interface BrodmannCustomGroup {
   areas: string[]
 }
 
+export const BRODMANN_CUSTOM_TITLE = 'Conjunto personalizado'
+export const BRODMANN_CUSTOM_NOTE = 'Grupos definidos por você: cada cor reúne as áreas escolhidas manualmente.'
+
 /** Etapas do fluxo novo -> nome -> cor -> regiões -> finaliza. */
 export type BrodmannBuilderStep = 'idle' | 'nome' | 'cor' | 'regioes'
 
@@ -299,6 +302,8 @@ export function useBrodmannAreas() {
 
   // Conjunto montado pelo usuário — vive apenas em memória, nada é persistido.
   const customGroups = ref<BrodmannCustomGroup[]>([])
+  const customTitle = ref(BRODMANN_CUSTOM_TITLE)
+  const customNote = ref(BRODMANN_CUSTOM_NOTE)
   const builderStep = ref<BrodmannBuilderStep>('idle')
   const draftLabel = ref('')
   const draftColor = ref(BRODMANN_PALETTE[0]!)
@@ -335,8 +340,8 @@ export function useBrodmannAreas() {
       }
       return {
         mode: 'custom',
-        title: 'Conjunto personalizado',
-        note: 'Grupos definidos por você: cada cor reúne as áreas escolhidas manualmente.',
+        title: customTitle.value.trim(),
+        note: customNote.value.trim(),
         chips,
       }
     }
@@ -511,6 +516,8 @@ export function useBrodmannAreas() {
 
   function clearCustomSet() {
     customGroups.value = []
+    customTitle.value = BRODMANN_CUSTOM_TITLE
+    customNote.value = BRODMANN_CUSTOM_NOTE
     resetBuilder()
     syncCustomSelection()
   }
@@ -562,6 +569,8 @@ export function useBrodmannAreas() {
     includeLegend,
     tooltip,
     customGroups,
+    customTitle,
+    customNote,
     builderStep,
     draftLabel,
     draftColor,

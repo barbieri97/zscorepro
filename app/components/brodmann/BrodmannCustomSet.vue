@@ -11,7 +11,8 @@ const STEP_META: Partial<Record<BrodmannBuilderStep, { index: number, title: str
   regioes: { index: 3, title: 'regiões do grupo' },
 }
 
-const { draftLabel } = store
+const { draftLabel, customTitle, customNote } = store
+const hasCustomSet = computed(() => store.customGroups.value.length > 0 || store.builderStep.value !== 'idle')
 const step = computed(() => STEP_META[store.builderStep.value])
 const draftCount = computed(() => store.draftAreas.size)
 
@@ -23,6 +24,28 @@ function onCustomColor(event: Event) {
 <template>
   <div>
     <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Meu conjunto</p>
+
+    <div v-if="hasCustomSet" class="mb-3 flex flex-col gap-1.5">
+      <UInput
+        v-model="customTitle"
+        size="sm"
+        class="w-full"
+        placeholder="Título do conjunto"
+        aria-label="Título do conjunto"
+      />
+      <UTextarea
+        v-model="customNote"
+        size="sm"
+        class="w-full"
+        :rows="2"
+        autoresize
+        placeholder="Subtítulo do conjunto"
+        aria-label="Subtítulo do conjunto"
+      />
+      <p class="text-[11px] leading-tight text-muted">
+        Título e subtítulo aparecem na legenda e na imagem exportada. Deixe em branco para omiti-los.
+      </p>
+    </div>
 
     <ul v-if="store.customGroups.value.length" class="mb-3 flex flex-col gap-0.5">
       <li
