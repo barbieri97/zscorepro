@@ -26,12 +26,16 @@ function onKeydown(event: KeyboardEvent) {
 
   if (event.key === 'Escape') {
     if (store.lectureMode.value) store.toggleLectureMode(false)
+    else if (store.builderStep.value !== 'idle') store.cancelCustomGroup()
     else store.clearSelection()
-  } else if (event.key === 'ArrowRight') {
-    store.cyclePreset(1)
-  } else if (event.key === 'ArrowLeft') {
-    store.cyclePreset(-1)
+    return
   }
+
+  // Durante a montagem de um grupo as setas não podem trocar o conjunto.
+  if (store.builderStep.value !== 'idle') return
+
+  if (event.key === 'ArrowRight') store.cyclePreset(1)
+  else if (event.key === 'ArrowLeft') store.cyclePreset(-1)
 }
 
 onMounted(() => window.addEventListener('keydown', onKeydown))

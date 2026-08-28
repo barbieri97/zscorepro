@@ -20,8 +20,9 @@ function handleExport(kind: 'svg' | 'png') {
   const el = svgComponent.value?.svgEl
   if (!el) return
   const filename = `brodmann-${props.view}.${kind}`
-  if (kind === 'svg') exportBrodmannSvg(el, filename)
-  else exportBrodmannPng(el, filename)
+  const legend = store.includeLegend.value ? store.exportLegend() : null
+  if (kind === 'svg') exportBrodmannSvg(el, filename, legend)
+  else exportBrodmannPng(el, filename, legend)
 }
 </script>
 

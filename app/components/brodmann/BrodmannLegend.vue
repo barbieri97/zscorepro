@@ -6,13 +6,13 @@ const { store } = defineProps<{ store: BrodmannStore }>()
 
 <template>
   <div class="mt-6 min-h-5">
-    <template v-if="store.legendData.value.mode === 'preset'">
+    <template v-if="store.legendData.value.mode === 'preset' || store.legendData.value.mode === 'custom'">
       <h2 class="font-serif text-lg">{{ store.legendData.value.title }}</h2>
       <p class="mb-3 max-w-[78ch] text-sm text-muted">{{ store.legendData.value.note }}</p>
       <div class="flex flex-wrap gap-2">
         <span
           v-for="chip in store.legendData.value.chips"
-          :key="chip.label"
+          :key="`${chip.label}-${chip.color}`"
           class="flex items-center gap-2 rounded border border-default bg-elevated py-1 pl-1.5 pr-2.5 text-sm"
         >
           <span class="h-3.5 w-3.5 rounded-sm ring-1 ring-inset ring-black/15" :style="{ background: chip.color }" />
@@ -26,7 +26,7 @@ const { store } = defineProps<{ store: BrodmannStore }>()
       <div class="flex flex-wrap gap-2">
         <span
           v-for="chip in store.legendData.value.chips"
-          :key="chip.label"
+          :key="`${chip.label}-${chip.color}`"
           class="flex items-center gap-2 rounded border border-default bg-elevated py-1 pl-1.5 pr-2.5 text-sm"
         >
           <span class="h-3.5 w-3.5 rounded-sm ring-1 ring-inset ring-black/15" :style="{ background: chip.color }" />

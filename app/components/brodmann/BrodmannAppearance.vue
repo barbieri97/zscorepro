@@ -3,6 +3,9 @@ import { BRODMANN_PALETTE } from '~/composables/useBrodmannAreas'
 import type { BrodmannStore } from '~/composables/useBrodmannAreas'
 
 const { store } = defineProps<{ store: BrodmannStore }>()
+
+// Refs extraídas do store: o v-model escreve direto na ref, sem mutar o prop.
+const { fadeUnselected, showLateral, showMedial, includeLegend } = store
 </script>
 
 <template>
@@ -24,16 +27,20 @@ const { store } = defineProps<{ store: BrodmannStore }>()
     </div>
 
     <label class="flex items-center gap-2 py-1 text-sm">
-      <UCheckbox v-model="store.fadeUnselected.value" />
+      <UCheckbox v-model="fadeUnselected" />
       Esmaecer as áreas não selecionadas
     </label>
     <label class="flex items-center gap-2 py-1 text-sm">
-      <UCheckbox v-model="store.showLateral.value" />
+      <UCheckbox v-model="showLateral" />
       Mostrar vista lateral
     </label>
     <label class="flex items-center gap-2 py-1 text-sm">
-      <UCheckbox v-model="store.showMedial.value" />
+      <UCheckbox v-model="showMedial" />
       Mostrar vista medial
+    </label>
+    <label class="flex items-center gap-2 py-1 text-sm">
+      <UCheckbox v-model="includeLegend" />
+      Incluir a legenda na imagem exportada
     </label>
   </div>
 </template>

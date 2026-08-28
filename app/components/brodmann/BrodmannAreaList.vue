@@ -3,6 +3,8 @@ import type { BrodmannStore } from '~/composables/useBrodmannAreas'
 
 const { store } = defineProps<{ store: BrodmannStore }>()
 
+const { search } = store
+
 function onToggle(ba: string) {
   store.toggleArea(ba)
 }
@@ -12,7 +14,7 @@ function onToggle(ba: string) {
   <div>
     <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Áreas</p>
     <UInput
-      v-model="store.search.value"
+      v-model="search"
       type="search"
       placeholder="Buscar por número ou nome"
       aria-label="Buscar área"
@@ -31,7 +33,7 @@ function onToggle(ba: string) {
           @mouseenter="store.setPreview(item.ba)"
           @mouseleave="store.setPreview(null)"
         >
-          <UCheckbox :model-value="store.selection.has(item.ba)" @update:model-value="onToggle(item.ba)" />
+          <UCheckbox :model-value="store.isAreaChecked(item.ba)" @update:model-value="onToggle(item.ba)" />
           <span class="w-6 shrink-0 text-right font-mono text-xs font-semibold">{{ item.ba }}</span>
           <span class="flex-1 text-xs leading-tight">{{ item.nome }}</span>
           <span class="shrink-0 font-mono text-[9.5px] tracking-wide text-muted">
