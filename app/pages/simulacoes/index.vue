@@ -17,6 +17,12 @@ const tools = [
     description: "Simulação do Spatial Stroop Task: responda à direção da seta ignorando sua posição na tela. Mede controle inibitório e tempo de reação em condições congruentes, incongruentes e neutras.",
     link: "/simulacoes/simon-task",
     icon: "i-heroicons-bolt"
+  },
+  {
+    label: "Áreas de Brodmann",
+    description: "Atlas interativo do córtex cerebral: selecione áreas numericamente ou aplique conjuntos prontos (linguagem, motor, visual e mais) e exporte as pranchas em SVG ou PNG.",
+    link: "/simulacoes/broadman-areas",
+    icon: "i-heroicons-cpu-chip"
   }
 ]
 </script>
