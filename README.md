@@ -30,6 +30,63 @@ ZSCOREPRO é uma plataforma web que oferece ferramentas estatísticas e psicomé
 ### 🎲 Simulações
 
 - **Tabuleiro de Galton** - Demonstração visual de como a variabilidade aleatória dos escores gera a distribuição normal
+- **Áreas de Brodmann** - Atlas interativo das áreas corticais, com conjuntos prontos, conjuntos próprios e exportação em SVG/PNG ([API pública](#-api-pública-áreas-de-brodmann))
+
+## 🔌 API pública: Áreas de Brodmann
+
+O atlas de Brodmann também está disponível como API aberta, sem autenticação e liberada
+para qualquer origem (CORS). Ela recebe os mesmos dados que você monta na interface —
+grupos de áreas, cada um com rótulo e cor — e devolve as pranchas em SVG ou PNG.
+
+Base: `https://www.zscorepro.com.br`
+
+### `POST /api/brodmann/export`
+
+Corpo em JSON:
+
+| Campo | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `groups` | `Array<{ label, color, areas }>` | `[]` | Grupos de áreas. `label` é o rótulo na legenda, `color` um hexadecimal (`#D92B2B`) e `areas` a lista de números de áreas de Brodmann. Uma área só pode aparecer em um grupo. Sem grupos, devolve a prancha com as cores originais do atlas. |
+| `view` | `"lateral" \| "medial" \| "both"` | `"both"` | Prancha desejada. |
+| `format` | `"svg" \| "png"` | `"svg"` | Formato da imagem. |
+| `legend` | `boolean` | `true` quando há grupos | Desenha a legenda abaixo da prancha. |
+| `title` | `string` | — | Título da legenda (até 120 caracteres). |
+| `note` | `string` | — | Texto de apoio sob o título (até 400 caracteres). |
+| `fadeUnselected` | `boolean` | `true` | Esmaece as áreas fora dos grupos. |
+| `scale` | `number` (1 a 4) | `2` | Multiplicador de resolução do PNG. |
+
+A resposta depende de `view`:
+
+- `lateral` ou `medial` → a imagem em si, com `Content-Type` `image/svg+xml` ou `image/png`.
+- `both` → um JSON `{ "lateral": ..., "medial": ... }`, com o SVG em texto ou o PNG como data URI.
+
+Entradas inválidas (cor fora do formato hexadecimal, área inexistente, área repetida em
+dois grupos) devolvem `400` com a mensagem do problema.
+
+```bash
+# Prancha lateral em SVG, com a rede da linguagem destacada
+curl -X POST https://www.zscorepro.com.br/api/brodmann/export \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "view": "lateral",
+    "format": "svg",
+    "title": "Linguagem",
+    "note": "Rede perissilviana esquerda.",
+    "groups": [
+      { "label": "Broca", "color": "#D92B2B", "areas": [44, 45] },
+      { "label": "Wernicke", "color": "#1B57A6", "areas": [22] }
+    ]
+  }' -o brodmann-lateral.svg
+```
+
+### `GET /api/brodmann/meta`
+
+Devolve o que é preciso para montar a requisição acima: as áreas válidas com nome e
+vistas em que aparecem, a paleta padrão e os conjuntos prontos usados na interface.
+
+```bash
+curl https://www.zscorepro.com.br/api/brodmann/meta
+```
 
 ## 🚀 Tecnologias
 
