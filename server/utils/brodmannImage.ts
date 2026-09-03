@@ -121,7 +121,8 @@ function textEl(content: string, x: number, y: number, options: {
   const attrs = [
     `x="${x}"`,
     `y="${y}"`,
-    `font-family="${options.font ?? LEGEND_FONT}"`,
+    // Escapado porque a pilha do título traz aspas em 'Times New Roman'.
+    `font-family="${escapeXml(options.font ?? LEGEND_FONT)}"`,
     `font-size="${options.size}"`,
     `fill="${options.fill ?? '#111827'}"`,
     options.weight ? `font-weight="${options.weight}"` : '',
@@ -231,6 +232,8 @@ export function renderBrodmannSvg(source: string, options: BrodmannRenderOptions
 }
 
 export async function renderBrodmannPng(svg: string, scale: number): Promise<Buffer> {
+  await ensureBrodmannFonts()
+
   const viewBoxMatch = svg.match(/viewBox="([^"]+)"/)
   const [, , width, height] = (viewBoxMatch?.[1] ?? '0 0 1000 1000').split(/\s+/).map(Number)
   const targetWidth = Math.max(1, Math.round((width ?? 1000) * scale))
