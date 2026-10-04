@@ -51,7 +51,7 @@ const remove = () => emit('update:modelValue', null)
     <div
       v-if="!modelValue"
       class="border-2 border-dashed rounded-xl transition-colors cursor-pointer"
-      :class="dragging ? 'border-primary bg-primary/5' : 'border-gray-300 dark:border-gray-700 hover:border-primary'"
+      :class="dragging ? 'border-primary bg-primary/5' : 'border-accented hover:border-primary'"
       @click="fileInput?.click()"
       @dragover.prevent="dragging = true"
       @dragleave="dragging = false"
@@ -67,7 +67,7 @@ const remove = () => emit('update:modelValue', null)
       </div>
     </div>
 
-    <div v-else class="relative group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div v-else class="relative group rounded-xl overflow-hidden border border-default">
       <img :src="modelValue" alt="Capa do post" class="w-full h-52 object-cover" />
       <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
         <UButton size="sm" variant="solid" color="neutral" @click="fileInput?.click()">Trocar</UButton>

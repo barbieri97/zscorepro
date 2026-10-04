@@ -9,6 +9,10 @@ const emit = defineEmits<{
 const { signIn, signUp, resetPassword, signInWithGoogle } = useAuth()
 
 const tab = ref<Tab>('login')
+const authTabs = [
+  { label: 'Entrar', value: 'login' },
+  { label: 'Cadastrar', value: 'register' },
+]
 const email = ref('')
 const displayName = ref('')
 const password = ref('')
@@ -145,22 +149,14 @@ function translateError(msg: string): string {
         </div>
 
         <!-- Tab switcher (login / register) -->
-        <div v-if="tab !== 'forgot'" class="flex bg-elevated rounded-lg p-1 gap-1">
-          <button
-            class="flex-1 py-1.5 rounded-md text-sm font-medium transition-all"
-            :class="tab === 'login' ? 'bg-primary text-inverted shadow' : 'text-muted hover:text-default'"
-            @click="tab = 'login'"
-          >
-            Entrar
-          </button>
-          <button
-            class="flex-1 py-1.5 rounded-md text-sm font-medium transition-all"
-            :class="tab === 'register' ? 'bg-primary text-inverted shadow' : 'text-muted hover:text-default'"
-            @click="tab = 'register'"
-          >
-            Cadastrar
-          </button>
-        </div>
+        <UTabs
+          v-if="tab !== 'forgot'"
+          :model-value="tab"
+          :items="authTabs"
+          :content="false"
+          class="w-full"
+          @update:model-value="tab = $event as Tab"
+        />
 
         <!-- Success message -->
         <UAlert
@@ -205,13 +201,14 @@ function translateError(msg: string): string {
           </UFormField>
 
           <div class="flex justify-end">
-            <button
-              type="button"
-              class="text-xs text-muted hover:text-primary transition-colors"
+            <UButton
+              label="Esqueci minha senha"
+              color="neutral"
+              variant="link"
+              size="xs"
+              class="p-0"
               @click="tab = 'forgot'"
-            >
-              Esqueci minha senha
-            </button>
+            />
           </div>
 
           <UButton
@@ -317,13 +314,15 @@ function translateError(msg: string): string {
           </UButton>
 
           <div class="text-center">
-            <button
-              type="button"
-              class="text-xs text-muted hover:text-primary transition-colors"
+            <UButton
+              label="Voltar ao login"
+              icon="i-lucide-arrow-left"
+              color="neutral"
+              variant="link"
+              size="xs"
+              class="p-0"
               @click="tab = 'login'"
-            >
-              ← Voltar ao login
-            </button>
+            />
           </div>
         </form>
 

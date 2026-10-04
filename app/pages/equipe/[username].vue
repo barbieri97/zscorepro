@@ -68,7 +68,7 @@ useSeoMeta({
       <div class="space-y-5">
         <div class="space-y-2">
           <div class="flex items-center gap-3 flex-wrap">
-            <h1 class="text-3xl font-bold">{{ member.username ?? 'Membro' }}</h1>
+            <h1 class="text-2xl font-bold">{{ member.username ?? 'Membro' }}</h1>
             <UBadge
               :color="member.role === 'admin' ? 'primary' : 'neutral'"
               variant="soft"

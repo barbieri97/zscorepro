@@ -109,7 +109,7 @@ const formattedDate = computed(() => {
         </UCard>
 
         <!-- Likes -->
-        <div class="flex flex-col items-center gap-2 py-8 border-y border-gray-200 dark:border-gray-700 mb-8">
+        <div class="flex flex-col items-center gap-2 py-8 border-y border-default mb-8">
           <p class="text-sm text-muted mb-2">Gostou do artigo?</p>
           <BlogPostLikes :post-id="post.id" :initial-count="likesCount" />
         </div>

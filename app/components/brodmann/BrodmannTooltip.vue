@@ -9,7 +9,7 @@ const { store } = defineProps<{ store: BrodmannStore }>()
     v-if="store.tooltip.visible"
     role="status"
     aria-live="polite"
-    class="pointer-events-none fixed z-50 max-w-[260px] rounded bg-neutral-900 px-2.5 py-1.5 text-xs leading-snug text-white shadow-lg"
+    class="pointer-events-none fixed z-50 max-w-[260px] rounded bg-inverted px-2.5 py-1.5 text-xs leading-snug text-inverted shadow-lg"
     :style="{ left: `${store.tooltip.x + 14}px`, top: `${store.tooltip.y + 16}px` }"
   >
     <template v-if="store.tooltip.ba === 'X'">

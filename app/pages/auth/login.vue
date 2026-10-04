@@ -68,7 +68,7 @@ const handleGoogleLogin = async () => {
   <UContainer class="py-20 flex justify-center">
     <div class="w-full max-w-md space-y-8">
       <div class="text-center space-y-2">
-        <h1 class="text-3xl font-bold">
+        <h1 class="text-2xl font-bold">
           {{ mode === 'login' ? 'Entrar' : 'Criar conta' }}
         </h1>
         <p class="text-muted">

@@ -100,13 +100,13 @@ const formattedDate = (d: string) =>
         <UButton to="/admin/posts/new" class="mt-4" variant="outline" size="sm">Criar primeiro post</UButton>
       </div>
 
-      <div v-else class="divide-y divide-gray-100 dark:divide-gray-800">
+      <div v-else class="divide-y divide-default">
         <div
           v-for="post in posts"
           :key="post.id"
-          class="flex items-center gap-4 py-3 px-1 hover:bg-gray-50 dark:hover:bg-gray-900/30 rounded-lg transition-colors"
+          class="flex items-center gap-4 py-3 px-1 hover:bg-elevated rounded-lg transition-colors"
         >
-          <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shrink-0">
+          <div class="w-12 h-12 rounded-lg overflow-hidden bg-elevated shrink-0">
             <img v-if="post.cover_image" :src="post.cover_image" class="w-full h-full object-cover" :alt="post.title" />
             <div v-else class="w-full h-full flex items-center justify-center">
               <UIcon name="i-heroicons-document-text" class="text-muted text-xl" />

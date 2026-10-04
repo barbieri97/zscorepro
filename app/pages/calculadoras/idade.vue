@@ -100,7 +100,7 @@ function copyAge(label: string, value: string) {
       </div>
 
       <!-- Prematuridade -->
-      <div class="mb-10 p-4 border border-gray-200 dark:border-gray-800 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+      <div class="mb-10 p-4 border border-default rounded-lg bg-muted">
         <UCheckbox 
           v-model="isPremature" 
           label="Criança nasceu prematura? (antes de 37 semanas)" 
@@ -133,11 +133,11 @@ function copyAge(label: string, value: string) {
       <div v-if="age" class="space-y-4">
         <!-- Cronológica -->
         <div>
-          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Idade Cronológica</h3>
+          <h3 class="text-sm font-medium text-muted mb-1">Idade Cronológica</h3>
           <div class="flex items-center justify-between p-3 border rounded">
             <div>
               <p class="font-semibold text-lg">{{ age.years }} anos {{ age.months }} meses e {{ age.days }} dias</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Ou {{ age.totalMonths }} meses</p>
+              <p class="text-sm text-muted mt-1">Ou {{ age.totalMonths }} meses</p>
             </div>
             <UButton
               icon="i-heroicons-clipboard"
@@ -150,17 +150,17 @@ function copyAge(label: string, value: string) {
         <!-- Corrigida -->
         <div v-if="isPremature && gestationalWeeks">
           <div class="flex items-center gap-2 mb-1">
-            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Idade Corrigida</h3>
-            <UBadge v-if="age.years >= 2" color="yellow" variant="subtle" size="xs">Raramente usada após 2 anos</UBadge>
+            <h3 class="text-sm font-medium text-muted">Idade Corrigida</h3>
+            <UBadge v-if="age.years >= 2" color="warning" variant="subtle" size="xs">Raramente usada após 2 anos</UBadge>
           </div>
           <div class="flex items-center justify-between p-3 border rounded bg-primary-50 dark:bg-primary-900/10 border-primary-100 dark:border-primary-800">
             <div>
               <template v-if="correctedAge?.isNegative">
-                <p class="font-semibold text-lg text-orange-600 dark:text-orange-400">Ainda não atingiu as 40 semanas</p>
+                <p class="font-semibold text-lg text-warning">Ainda não atingiu as 40 semanas</p>
               </template>
               <template v-else-if="correctedAge">
                 <p class="font-semibold text-lg">{{ correctedAge.years }} anos {{ correctedAge.months }} meses e {{ correctedAge.days }} dias</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Ou {{ correctedAge.totalMonths }} meses</p>
+                <p class="text-sm text-muted mt-1">Ou {{ correctedAge.totalMonths }} meses</p>
               </template>
             </div>
             <UButton

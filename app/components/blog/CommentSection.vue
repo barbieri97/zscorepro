@@ -70,7 +70,7 @@ const onReply = async () => loadComments()
       </div>
     </div>
 
-    <div v-else class="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-6 text-center space-y-3">
+    <div v-else class="rounded-xl border border-dashed border-accented p-6 text-center space-y-3">
       <p class="text-muted text-sm">Faça login para comentar</p>
       <UButton to="/auth/login" variant="outline" size="sm">Entrar</UButton>
     </div>
@@ -84,7 +84,7 @@ const onReply = async () => loadComments()
       Seja o primeiro a comentar!
     </div>
 
-    <div v-else class="divide-y divide-gray-100 dark:divide-gray-800">
+    <div v-else class="divide-y divide-default">
       <BlogCommentItem
         v-for="comment in comments"
         :key="comment.id"

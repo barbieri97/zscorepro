@@ -18,7 +18,7 @@ const { fadeUnselected, showLateral, showMedial, includeLegend } = store
         :key="color"
         type="button"
         class="h-6 w-6 rounded-full ring-inset transition-shadow"
-        :class="store.activeColor.value === color ? 'ring-2 ring-neutral-900 dark:ring-white' : 'ring-1 ring-black/15'"
+        :class="store.activeColor.value === color ? 'ring-2 ring-inverted' : 'ring-1 ring-black/15'"
         :style="{ background: color }"
         :aria-pressed="store.activeColor.value === color"
         :aria-label="`Cor de destaque ${color}`"
