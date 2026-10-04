@@ -133,7 +133,7 @@ useHead({
         </UCard>
         <UCard class="text-center py-3">
           <p class="text-xs text-muted uppercase tracking-wide mb-1">Erros</p>
-          <p class="text-2xl font-bold text-red-500">{{ errorCount }}</p>
+          <p class="text-2xl font-bold text-error">{{ errorCount }}</p>
         </UCard>
       </div>
 
@@ -233,7 +233,7 @@ useHead({
         <UCard>
           <template #header>
             <div class="flex items-center gap-3">
-              <UIcon name="i-heroicons-trophy" class="text-yellow-500 text-3xl" />
+              <UIcon name="i-heroicons-trophy" class="text-warning text-3xl" />
               <h3 class="font-bold text-xl">Parabéns!</h3>
             </div>
           </template>
@@ -252,7 +252,7 @@ useHead({
               </div>
               <div class="stat-card">
                 <p class="stat-label">Erros</p>
-                <p class="stat-value text-red-500">{{ errorCount }}</p>
+                <p class="stat-value text-error">{{ errorCount }}</p>
               </div>
               <div class="stat-card">
                 <p class="stat-label">Tempo</p>
@@ -262,7 +262,7 @@ useHead({
 
             <div
               v-if="moveCount === optimalMoves && errorCount === 0"
-              class="rounded-lg bg-yellow-500/10 border border-yellow-500/30 p-3 text-sm text-center text-yellow-600 dark:text-yellow-400 font-medium"
+              class="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm text-center text-warning font-medium"
             >
               🏆 Solução ótima! Você foi perfeito!
             </div>
@@ -295,7 +295,7 @@ useHead({
               <UButton
                 v-if="history.length > 0"
                 variant="ghost"
-                color="red"
+                color="error"
                 size="xs"
                 icon="i-heroicons-trash"
                 @click="clearHistory"
@@ -322,7 +322,7 @@ useHead({
               <div class="flex gap-4 text-xs text-muted">
                 <span>Movimentos: <strong class="text-primary">{{ record.moves }}</strong></span>
                 <span>Mínimo: {{ record.optimal }}</span>
-                <span>Erros: <strong class="text-red-400">{{ record.errors }}</strong></span>
+                <span>Erros: <strong class="text-error">{{ record.errors }}</strong></span>
                 <span>Tempo: {{ formatDuration(record.durationSeconds) }}</span>
               </div>
             </div>

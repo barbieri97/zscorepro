@@ -39,7 +39,7 @@ const toggle = async () => {
   >
     <span
       class="text-4xl transition-transform group-hover:scale-110 group-active:scale-95"
-      :class="liked ? 'text-primary' : 'text-gray-400 dark:text-gray-600'"
+      :class="liked ? 'text-primary' : 'text-dimmed'"
     >
       <UIcon :name="liked ? 'i-ph-brain-fill' : 'i-ph-brain'" class="size-10" />
     </span>

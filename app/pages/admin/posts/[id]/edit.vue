@@ -94,7 +94,7 @@ const save = async (action: 'draft' | 'publish' | 'unpublish') => {
   <UContainer class="py-10 max-w-4xl space-y-8">
     <div class="flex items-center gap-4">
       <UButton to="/admin" variant="ghost" icon="i-heroicons-arrow-left">Admin</UButton>
-      <h1 class="text-xl font-bold">Editar Post</h1>
+      <h1 class="text-2xl font-bold">Editar Post</h1>
       <UBadge :color="form.published ? 'success' : 'warning'" variant="soft" class="ml-auto">
         {{ form.published ? 'Publicado' : 'Rascunho' }}
       </UBadge>
@@ -180,7 +180,7 @@ const save = async (action: 'draft' | 'publish' | 'unpublish') => {
             <div v-if="form.tags.length" class="flex flex-wrap gap-2">
               <div v-for="tag in form.tags" :key="tag" class="flex items-center gap-1">
                 <UBadge variant="soft">{{ tag }}</UBadge>
-                <button class="text-xs text-muted hover:text-error" @click="removeTag(tag)">×</button>
+                <UButton icon="i-lucide-x" color="neutral" variant="link" size="xs" class="p-0 hover:text-error" :aria-label="`Remover ${tag}`" @click="removeTag(tag)" />
               </div>
             </div>
           </div>

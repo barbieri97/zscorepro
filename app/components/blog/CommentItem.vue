@@ -94,7 +94,7 @@ const formattedDate = computed(() =>
 </script>
 
 <template>
-  <div :class="depth > 0 ? 'ml-6 pl-4 border-l-2 border-gray-200 dark:border-gray-700' : ''">
+  <div :class="depth > 0 ? 'ml-6 pl-4 border-l-2 border-default' : ''">
     <div class="flex gap-3 py-3">
       <UAvatar
         :src="comment.profiles?.avatar_url ?? undefined"
@@ -119,22 +119,21 @@ const formattedDate = computed(() =>
         </div>
 
         <div class="flex items-center gap-3 mt-2">
-          <button class="flex items-center gap-1 text-xs transition-colors hover:text-primary" :class="liked ? 'text-primary' : 'text-muted'" @click="toggleLike">
-            <UIcon :name="liked ? 'i-ph-heart-fill' : 'i-ph-heart'" class="text-sm" />
-            {{ likesCount }}
-          </button>
+          <UButton
+            :icon="liked ? 'i-ph-heart-fill' : 'i-ph-heart'"
+            :label="String(likesCount)"
+            :color="liked ? 'primary' : 'neutral'"
+            variant="link"
+            size="xs"
+            class="p-0"
+            @click="toggleLike"
+          />
 
-          <button v-if="user && depth < 2" class="text-xs text-muted hover:text-primary transition-colors" @click="showReply = !showReply">
-            Responder
-          </button>
+          <UButton v-if="user && depth < 2" label="Responder" color="neutral" variant="link" size="xs" class="p-0" @click="showReply = !showReply" />
 
           <template v-if="isOwn">
-            <button class="text-xs text-muted hover:text-primary transition-colors" @click="editing = !editing">
-              Editar
-            </button>
-            <button class="text-xs text-muted hover:text-error transition-colors" @click="remove">
-              Excluir
-            </button>
+            <UButton label="Editar" color="neutral" variant="link" size="xs" class="p-0" @click="editing = !editing" />
+            <UButton label="Excluir" color="neutral" variant="link" size="xs" class="p-0 hover:text-error" @click="remove" />
           </template>
         </div>
 

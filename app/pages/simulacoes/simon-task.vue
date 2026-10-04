@@ -263,8 +263,8 @@ useHead({
                 <th>Média (ms)</th>
                 <th>Mediana (ms)</th>
                 <th>Acertos</th>
-                <th class="text-rose-500">Erros</th>
-                <th class="text-amber-500">Omissões</th>
+                <th class="text-error">Erros</th>
+                <th class="text-warning">Omissões</th>
               </tr>
             </thead>
             <tbody>
@@ -273,24 +273,24 @@ useHead({
                 <td>{{ fmt(sessionResult.meanRT.congruent) }}</td>
                 <td>{{ fmt(sessionResult.medianRT.congruent) }}</td>
                 <td>{{ sessionResult.trials.filter(t => t.type === 'congruent' && t.correct).length }}</td>
-                <td class="text-rose-500 font-medium">{{ sessionResult.errors.congruent }}</td>
-                <td class="text-amber-500 font-medium">{{ sessionResult.misses.congruent }}</td>
+                <td class="text-error font-medium">{{ sessionResult.errors.congruent }}</td>
+                <td class="text-warning font-medium">{{ sessionResult.misses.congruent }}</td>
               </tr>
               <tr>
                 <td><span class="dot dot-slate" />Neutro</td>
                 <td>{{ fmt(sessionResult.meanRT.neutral) }}</td>
                 <td>{{ fmt(sessionResult.medianRT.neutral) }}</td>
                 <td>{{ sessionResult.trials.filter(t => t.type === 'neutral' && t.correct).length }}</td>
-                <td class="text-rose-500 font-medium">{{ sessionResult.errors.neutral }}</td>
-                <td class="text-amber-500 font-medium">{{ sessionResult.misses.neutral }}</td>
+                <td class="text-error font-medium">{{ sessionResult.errors.neutral }}</td>
+                <td class="text-warning font-medium">{{ sessionResult.misses.neutral }}</td>
               </tr>
               <tr>
                 <td><span class="dot dot-red" />Incongruente</td>
                 <td>{{ fmt(sessionResult.meanRT.incongruent) }}</td>
                 <td>{{ fmt(sessionResult.medianRT.incongruent) }}</td>
                 <td>{{ sessionResult.trials.filter(t => t.type === 'incongruent' && t.correct).length }}</td>
-                <td class="text-rose-500 font-medium">{{ sessionResult.errors.incongruent }}</td>
-                <td class="text-amber-500 font-medium">{{ sessionResult.misses.incongruent }}</td>
+                <td class="text-error font-medium">{{ sessionResult.errors.incongruent }}</td>
+                <td class="text-warning font-medium">{{ sessionResult.misses.incongruent }}</td>
               </tr>
             </tbody>
           </table>
@@ -360,7 +360,7 @@ useHead({
             <UButton
               v-if="history.length > 0"
               variant="ghost"
-              color="red"
+              color="error"
               size="xs"
               icon="i-heroicons-trash"
               @click="clearHistory"

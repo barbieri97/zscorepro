@@ -74,32 +74,32 @@ generateNewCpf()
         <h2 class="text-lg font-semibold text-center">
           Gerador de CPF
         </h2>
-        <p class="text-sm text-gray-500 text-center mt-1">
+        <p class="text-sm text-muted text-center mt-1">
           Gere números de CPF válidos para testes.
         </p>
       </template>
 
       <div class="space-y-8 my-6">
-        <div class="flex items-center justify-between p-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between p-4 bg-muted rounded-lg border border-default">
           <div>
             <div class="font-medium">Usar pontuação</div>
-            <div class="text-sm text-gray-500">Exibe como 000.000.000-00</div>
+            <div class="text-sm text-muted">Exibe como 000.000.000-00</div>
           </div>
           <USwitch v-model="useFormatting" />
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="font-medium text-sm text-gray-700 dark:text-gray-300">CPF de Teste Gerado</label>
+          <label class="font-medium text-sm text-toned">CPF de Teste Gerado</label>
           <div class="flex items-center gap-2">
             <UInput
               v-model="generatedCpf"
               readonly
-              class="flex-1 text-center text-xl font-mono tracking-widest bg-gray-50 dark:bg-gray-900"
+              class="flex-1 text-center text-xl font-mono tracking-widest"
               size="xl"
             />
             <UButton
               icon="i-heroicons-clipboard-document"
-              color="gray"
+              color="neutral"
               variant="solid"
               size="xl"
               @click="copyCpf"

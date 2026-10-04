@@ -32,7 +32,7 @@ onMounted(() => {
             <h3 class="text-base font-semibold leading-6">
               Aviso de Resolução
             </h3>
-            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="showMobileWarning = false" />
+            <UButton color="neutral" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="showMobileWarning = false" />
           </div>
         </template>
         
@@ -111,7 +111,7 @@ onMounted(() => {
       </div>
 
       <!-- Canvas da simulação -->
-      <div class="flex justify-center mb-6 bg-gray-900 dark:bg-gray-950 rounded-lg overflow-hidden">
+      <div class="flex justify-center mb-6 bg-slate-900 dark:bg-slate-950 rounded-lg overflow-hidden">
         <canvas ref="canvasRef" class="max-w-full" />
       </div>
 

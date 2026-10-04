@@ -83,11 +83,11 @@ const onImageFile = async (e: Event) => {
 </script>
 
 <template>
-  <div class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+  <div class="border border-default rounded-xl overflow-hidden">
     <!-- Toolbar -->
     <div
       v-if="editable && editor"
-      class="flex flex-wrap gap-0.5 p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
+      class="flex flex-wrap gap-0.5 p-2 border-b border-default bg-muted"
     >
       <UButton size="xs" :variant="editor.isActive('bold') ? 'solid' : 'ghost'" title="Negrito" @click="editor.chain().focus().toggleBold().run()">
         <UIcon name="i-tabler-bold" />
@@ -99,7 +99,7 @@ const onImageFile = async (e: Event) => {
         <UIcon name="i-tabler-strikethrough" />
       </UButton>
 
-      <div class="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1 self-center" />
+      <div class="w-px h-5 bg-accented mx-1 self-center" />
 
       <UButton size="xs" :variant="editor.isActive('heading', { level: 1 }) ? 'solid' : 'ghost'" title="Título 1" @click="editor.chain().focus().toggleHeading({ level: 1 }).run()">
         <UIcon name="i-tabler-h-1" />
@@ -111,7 +111,7 @@ const onImageFile = async (e: Event) => {
         <UIcon name="i-tabler-h-3" />
       </UButton>
 
-      <div class="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1 self-center" />
+      <div class="w-px h-5 bg-accented mx-1 self-center" />
 
       <UButton size="xs" :variant="editor.isActive('bulletList') ? 'solid' : 'ghost'" title="Lista" @click="editor.chain().focus().toggleBulletList().run()">
         <UIcon name="i-tabler-list" />
@@ -129,7 +129,7 @@ const onImageFile = async (e: Event) => {
         <UIcon name="i-tabler-minus" />
       </UButton>
 
-      <div class="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1 self-center" />
+      <div class="w-px h-5 bg-accented mx-1 self-center" />
 
       <UButton size="xs" :variant="editor.isActive('link') ? 'solid' : 'ghost'" title="Link" @click="openLinkModal">
         <UIcon name="i-tabler-link" />
@@ -138,7 +138,7 @@ const onImageFile = async (e: Event) => {
         <UIcon name="i-tabler-photo" />
       </UButton>
 
-      <div class="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1 self-center" />
+      <div class="w-px h-5 bg-accented mx-1 self-center" />
 
       <UButton size="xs" variant="ghost" title="Desfazer" :disabled="!editor.can().undo()" @click="editor.chain().focus().undo().run()">
         <UIcon name="i-tabler-arrow-back-up" />

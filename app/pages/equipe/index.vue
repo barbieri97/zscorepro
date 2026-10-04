@@ -22,7 +22,7 @@ const authors = computed(() => members.value?.filter(m => m.role === 'author') ?
 <template>
   <UContainer class="py-16 max-w-4xl space-y-16">
     <div class="text-center space-y-3">
-      <h1 class="text-4xl font-bold">Nossa Equipe</h1>
+      <h1 class="text-4xl font-bold text-primary">Nossa Equipe</h1>
       <p class="text-muted max-w-xl mx-auto">
         Conheça as pessoas por trás do ZSCOREPRO.
       </p>
